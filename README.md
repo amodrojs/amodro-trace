@@ -25,3 +25,8 @@ The general pipeline:
 
 
 
+
+## TODO
+
+* Scrub loader/loader.js for config. vs config._options,
+  document/test any _options, and things like shim.

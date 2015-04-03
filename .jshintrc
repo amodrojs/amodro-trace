@@ -29,5 +29,7 @@
 
   "-W078": true,
 
-  "node": true
+  "node": true,
+
+  "predef": ["define"]
 }

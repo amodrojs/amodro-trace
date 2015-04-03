@@ -1,0 +1,21 @@
+{
+  "name": "bamodo",
+  "version": "0.0.1",
+  "description": "A collection of modules for doing builds of AMD modules",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jrburke/bamodo.git"
+  },
+  "author": "James Burke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jrburke/bamodo/issues"
+  },
+  "dependencies": {
+    "esprima": "2.1.0"
+  }
+}

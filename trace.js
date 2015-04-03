@@ -31,7 +31,17 @@ module.exports = function trace(options, loaderConfig) {
       var context = loader.getContext(loaderResult.id);
       loader.discard(loaderResult.id);
 
-      resolve(context._layer.buildFilePaths);
+      var paths = context._layer.buildFilePaths,
+          idMap = context._layer.buildFileToModule;
+
+      var result = paths.map(function(filePath) {
+        return {
+          id: idMap[filePath],
+          path: filePath
+        };
+      });
+
+      resolve(result);
     }
 
     // Inform requirejs that we want this function executed when done.

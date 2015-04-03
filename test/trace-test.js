@@ -6,15 +6,18 @@ var fs = require('fs'),
     assert = require('assert'),
     trace = require('../trace'),
     backSlashRegExp = /\\/g,
-    dir = __dirname;
+    dir = __dirname,
+    baseDir = path.join(dir, 'source', 'trace');
 
 function assertMatch(id, traced) {
+  console.log(id + ':\n' + JSON.stringify(traced, null, '  '));
+
   var expectedPath = path.join(dir, 'expected', 'trace', id + '.json');
   var expected = JSON.parse(fs.readFileSync(expectedPath, 'utf8'));
 
   // Clean traced to match across platform/file systems
-  traced = traced.map(function(filePath) {
-    return filePath
+  traced.forEach(function(entry) {
+    entry.path = entry.path
            // Remove file system specific prefix.
            .replace(dir, '')
            // Remove starting path separator.
@@ -26,21 +29,28 @@ function assertMatch(id, traced) {
   assert.deepEqual(expected, traced);
 }
 
+function runTrace(done, name, options, config) {
+  if (!config) {
+    config = {
+      baseUrl: path.join(baseDir, name)
+    };
+  }
+
+  trace(options, config)
+  .then(function(traced) {
+    assertMatch(name, traced);
+    done();
+  }).catch(function(err) {
+    done(err);
+  });
+}
+
 // Start the tests
 describe('trace', function() {
-  var baseDir = path.join(dir, 'source', 'trace');
-
   it('simple', function(done) {
-    trace({
-      id: 'main'
-    }, {
-      baseUrl: path.join(baseDir, 'simple')
-    })
-    .then(function(traced) {
-      assertMatch('simple', traced);
-      done();
-    }).catch(function(err) {
-      done(err);
-    });
+    runTrace(done, 'simple', { id: 'main' });
   });
+  // it('plugin', function(done) {
+  //   runTrace(done, 'plugin', { id: 'main' });
+  // });
 });

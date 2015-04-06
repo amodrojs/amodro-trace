@@ -1,7 +1,7 @@
 /*global describe, it */
 'use strict';
 
-var commonJs = require('../lib/commonJs'),
+var convertcjs = require('../convertcjs'),
     fs = require('fs'),
     path = require('path'),
     assert = require('assert'),
@@ -70,7 +70,7 @@ describe('trace', function() {
     runTrace(done, 'cjs', {
       id: 'lib',
       onRead: function(id, url, contents) {
-        var result = commonJs.convert(url, contents);
+        var result = convertcjs(url, contents);
         return result;
       }
     });

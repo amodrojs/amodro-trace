@@ -1,13 +1,5 @@
 [
   {
-    "id": "d",
-    "path": "source/trace/nested/d.js"
-  },
-  {
-    "id": "c",
-    "path": "source/trace/nested/c.js"
-  },
-  {
     "id": "b",
     "path": "source/trace/nested/b.js"
   },
@@ -20,8 +12,16 @@
     "path": "source/trace/nested/a.js"
   },
   {
+    "id": "c",
+    "path": "source/trace/nested/c.js"
+  },
+  {
     "id": "top",
     "path": "source/trace/nested/top.js"
+  },
+  {
+    "id": "d",
+    "path": "source/trace/nested/d.js"
   },
   {
     "id": "main",

@@ -25,53 +25,19 @@ The general pipeline:
 
 .onRead, mention commonjs.convert
 
+.findNestedDependencies
 
 
 
 
 ## TODO
 
-_options.wrapShim: just document it.
+_options.wrapShim: just document it, include test after also allowing return of file contents.
 
-_options.findNestedDependencies
 
 config.shim
 
-* cjs tests can vary in output. Force sync or instead allow for multiple answers in the expected test? Or both?
-
-[
-  {
-    "id": "model",
-    "path": "source/trace/cjs/model.js"
-  },
-  {
-    "id": "template",
-    "path": "source/trace/cjs/template.js"
-  },
-  {
-    "id": "controller",
-    "path": "source/trace/cjs/controller.js"
-  },
-  {
-    "id": "util/helper",
-    "path": "source/trace/cjs/util/helper.js"
-  },
-  {
-    "id": "jquery",
-    "path": "source/trace/cjs/jquery.js"
-  },
-  {
-    "id": "view",
-    "path": "source/trace/cjs/view.js"
-  },
-  {
-    "id": "lib",
-    "path": "source/trace/cjs/lib.js"
-  }
-]
-
-
-* lib/commonJs to cjsConvert
+* remove file.js and cbToPromise.js?
 * how to deal with streams, like a gulp thing?
 * Get contents back in results
   * no onWrite, can translate after. Although, requires another array scan. But for source maps do not use.

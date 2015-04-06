@@ -1,0 +1,22 @@
+[
+  {
+    "id": "util",
+    "path": "source/trace/plugin/util.js"
+  },
+  {
+    "id": "converter",
+    "path": "source/trace/plugin/converter.js"
+  },
+  {
+    "id": "plug",
+    "path": "source/trace/plugin/plug.js"
+  },
+  {
+    "id": "plug!shouldbeuppercasetext",
+    "path": "plug!shouldbeuppercasetext"
+  },
+  {
+    "id": "main",
+    "path": "source/trace/plugin/main.js"
+  }
+]

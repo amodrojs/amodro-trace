@@ -10,21 +10,28 @@ var fs = require('fs'),
     baseDir = path.join(dir, 'source', 'trace');
 
 function assertMatch(id, traced) {
-  console.log(id + ':\n' + JSON.stringify(traced, null, '  '));
-
   var expectedPath = path.join(dir, 'expected', 'trace', id + '.json');
   var expected = JSON.parse(fs.readFileSync(expectedPath, 'utf8'));
 
   // Clean traced to match across platform/file systems
   traced.forEach(function(entry) {
-    entry.path = entry.path
-           // Remove file system specific prefix.
-           .replace(dir, '')
-           // Remove starting path separator.
-           .substring(1)
-           // Normalize for *nix front slashes.
-           .replace(backSlashRegExp, '/');
+    if (entry.path.indexOf('!') === -1) {
+      entry.path = entry.path
+             // Remove file system specific prefix.
+             .replace(dir, '')
+             // Remove starting path separator.
+             .substring(1)
+             // Normalize for *nix front slashes.
+             .replace(backSlashRegExp, '/');
+    }
   });
+
+  // console.log('TRACED: ' + id + ':\n' +
+  //             JSON.stringify(traced, null, '  '));
+
+  // console.log('EXPECTED: ' + id + ':\n' +
+  //             JSON.stringify(expected, null, '  '));
+
 
   assert.deepEqual(expected, traced);
 }
@@ -50,7 +57,7 @@ describe('trace', function() {
   it('simple', function(done) {
     runTrace(done, 'simple', { id: 'main' });
   });
-  // it('plugin', function(done) {
-  //   runTrace(done, 'plugin', { id: 'main' });
-  // });
+  it('plugin', function(done) {
+    runTrace(done, 'plugin', { id: 'main' });
+  });
 });

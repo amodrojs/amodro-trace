@@ -6,7 +6,7 @@
 
 var parse = require('./parse');
 
-module.exports = function convertcjs(fileName, fileContents) {
+module.exports = function cjsTranslate(fileName, fileContents) {
   // Strip out comments.
   try {
     var preamble = '',

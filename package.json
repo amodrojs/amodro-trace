@@ -2,7 +2,7 @@
   "name": "bamodo",
   "version": "0.0.1",
   "description": "A collection of modules for doing builds of AMD modules",
-  "main": "index.js",
+  "main": "trace.js",
   "scripts": {
     "test": "rm -rf test/output && node_modules/.bin/mocha test"
   },

@@ -1,6 +1,6 @@
 'use strict';
 var Prom = require('./lib/prom'),
-    loader = require('./lib/loader/loader');
+    Loader = require('./lib/loader/Loader');
 
 /**
  * Returns the set of nested dependencies for a given module ID in the options.
@@ -19,18 +19,19 @@ module.exports = function trace(options, loaderConfig) {
       return;
     }
 
-    var loaderResult = loader.create(options),
-        instance = loaderResult.instance;
+    var loader = new Loader(options);
 
     if (loaderConfig) {
-      loader.getContext(loaderResult.id).configure(loaderConfig);
+      loader.getContext().configure(loaderConfig);
     }
 
     function onOk() {
-      // Pull out the list of IDs for this layer as the return value.
-      var context = loader.getContext(loaderResult.id);
-      loader.discard(loaderResult.id);
+      var context = loader.getContext();
 
+      // Clean up resources used by this loader instance.
+      loader.discard();
+
+      // Pull out the list of IDs for this layer as the return value.
       var paths = context._layer.buildFilePaths,
           idMap = context._layer.buildFileToModule;
 
@@ -47,7 +48,7 @@ module.exports = function trace(options, loaderConfig) {
     // Inform requirejs that we want this function executed when done.
     onOk.__requireJsBuild = true;
 
-    instance([options.id], onOk, function(err) {
+    loader.require([options.id], onOk, function(err) {
       reject(err);
     });
   });

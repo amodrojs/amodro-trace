@@ -1,7 +1,7 @@
 /*global describe, it */
 'use strict';
 
-var convertcjs = require('../convertcjs'),
+var cjsTranslate = require('../cjsTranslate'),
     fs = require('fs'),
     path = require('path'),
     assert = require('assert'),
@@ -69,8 +69,8 @@ describe('trace', function() {
   it('cjs', function(done) {
     runTrace(done, 'cjs', {
       id: 'lib',
-      onRead: function(id, url, contents) {
-        var result = convertcjs(url, contents);
+      translate: function(id, url, contents) {
+        var result = cjsTranslate(url, contents);
         return result;
       }
     });

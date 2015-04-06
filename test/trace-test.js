@@ -30,6 +30,9 @@ function assertMatch(id, traced) {
     }
   });
 
+  // console.log('TRACED CLEANED: ' + id + ':\n' +
+  //             JSON.stringify(traced, null, '  '));
+
   // console.log('EXPECTED: ' + id + ':\n' +
   //             JSON.stringify(expected, null, '  '));
 
@@ -37,7 +40,7 @@ function assertMatch(id, traced) {
   assert.deepEqual(expected, traced);
 }
 
-function runTrace(done, name, options, config) {
+function runTrace(done, name, options, config, matchId) {
   if (!config) {
     config = {
       baseUrl: path.join(baseDir, name)
@@ -46,7 +49,7 @@ function runTrace(done, name, options, config) {
 
   trace(options, config)
   .then(function(traced) {
-    assertMatch(name, traced);
+    assertMatch(matchId || name, traced);
     done();
   }).catch(function(err) {
     done(err);
@@ -58,9 +61,11 @@ describe('trace', function() {
   it('simple', function(done) {
     runTrace(done, 'simple', { id: 'main' });
   });
+
   it('plugin', function(done) {
     runTrace(done, 'plugin', { id: 'main' });
   });
+
   it('cjs', function(done) {
     runTrace(done, 'cjs', {
       id: 'lib',
@@ -70,4 +75,16 @@ describe('trace', function() {
       }
     });
   });
+
+  it('nested-nonesting', function(done) {
+    runTrace(done, 'nested', { id: 'main' }, null, 'nested-nonesting');
+  });
+
+  it('nested-nonesting', function(done) {
+    runTrace(done, 'nested', {
+      id: 'main',
+      findNestedDependencies: true
+    });
+  });
+
 });

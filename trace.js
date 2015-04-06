@@ -19,7 +19,7 @@ module.exports = function trace(options, loaderConfig) {
       return;
     }
 
-    var loaderResult = loader.create(),
+    var loaderResult = loader.create(options),
         instance = loaderResult.instance;
 
     if (loaderConfig) {

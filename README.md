@@ -21,12 +21,17 @@ The general pipeline:
 * **bamodo/transform**: transforms a set of files as specified by a trace result.
 * **bamodo/combine**: combines a set of files from a trace result into a concatenated set of modules.
 
-### bamodo/configure
+### trace options
+
+.onRead, mention commonjs.convert
+
 
 
 
 
 ## TODO
 
-* Scrub loader/loader.js for config. vs config._options,
-  document/test any _options, and things like shim.
+_options.wrapShim
+_options.findNestedDependencies
+config.shim
+config.has

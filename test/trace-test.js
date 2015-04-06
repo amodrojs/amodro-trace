@@ -1,7 +1,8 @@
 /*global describe, it */
 'use strict';
 
-var fs = require('fs'),
+var commonJs = require('../lib/commonJs'),
+    fs = require('fs'),
     path = require('path'),
     assert = require('assert'),
     trace = require('../trace'),
@@ -10,6 +11,9 @@ var fs = require('fs'),
     baseDir = path.join(dir, 'source', 'trace');
 
 function assertMatch(id, traced) {
+  // console.log('TRACED: ' + id + ':\n' +
+  //             JSON.stringify(traced, null, '  '));
+
   var expectedPath = path.join(dir, 'expected', 'trace', id + '.json');
   var expected = JSON.parse(fs.readFileSync(expectedPath, 'utf8'));
 
@@ -25,9 +29,6 @@ function assertMatch(id, traced) {
              .replace(backSlashRegExp, '/');
     }
   });
-
-  // console.log('TRACED: ' + id + ':\n' +
-  //             JSON.stringify(traced, null, '  '));
 
   // console.log('EXPECTED: ' + id + ':\n' +
   //             JSON.stringify(expected, null, '  '));
@@ -59,5 +60,14 @@ describe('trace', function() {
   });
   it('plugin', function(done) {
     runTrace(done, 'plugin', { id: 'main' });
+  });
+  it('cjs', function(done) {
+    runTrace(done, 'cjs', {
+      id: 'lib',
+      onRead: function(id, url, contents) {
+        var result = commonJs.convert(url, contents);
+        return result;
+      }
+    });
   });
 });

@@ -29,7 +29,7 @@ The general pipeline:
 
 ### trace options
 
-.translate, mention commonjs.convert
+.translate, mention commonjs.convert. translate may run on non-js files.
 
 .findNestedDependencies
 
@@ -64,13 +64,8 @@ config.shim
 
 options.logger.warn for transform.
 
-* indicate plugin resources in output, guess at file path?
 * how to deal with streams, like a gulp thing?
   * .read option, that can replace the cacheRead function?
-* Get contents back in results: the translated source?
-  * What about plugin content, is that run through translate? no.
-  * transform module to name modules for example. Can be external?
-  * no onWrite, can translate after. Although, requires another array scan. But for source maps do not use.
 * license: bsd also, dojo foundation
 * load error in Loader.js still propagate correctly?
 * clean up readme
@@ -79,3 +74,8 @@ More tests from r.js dir
 
 * shim in particular.
 * paths config, are paths normalized?
+* does the guessing work right for plugin resources? need to use nameToUrl on the map.name part.
+* test transforms, do they work?
+* confirm the includeContents is the translated source.
+
+

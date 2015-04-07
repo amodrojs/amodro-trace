@@ -66,10 +66,13 @@ module.exports = function trace(options, loaderConfig) {
           item.path = filePath;
         }
 
-        if (options.includeContents) {
+        if (options.includeContents && filePath) {
           var contents = context._cachedFileContents[filePath];
           if (!contents && exists(filePath)) {
             contents = context.cacheRead(filePath) || '';
+            if (options.translate) {
+              contents = options.translate(id, filePath, contents);
+            }
           }
           item.contents = contents;
         }
@@ -83,10 +86,15 @@ module.exports = function trace(options, loaderConfig) {
         loader = null;
       }
 
-      resolve({
-        loader: loader,
+      var resolved = {
         traced: result
-      });
+      };
+
+      if (loader) {
+        resolved.loader = loader;
+      }
+
+      resolve(resolved);
     }
 
     // Inform requirejs that we want this function executed when done.

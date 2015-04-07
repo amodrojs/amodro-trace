@@ -12,8 +12,7 @@
     "path": "source/trace/plugin/plug.js"
   },
   {
-    "id": "plug!shouldbeuppercasetext",
-    "path": "plug!shouldbeuppercasetext"
+    "id": "plug!shouldbeuppercasetext"
   },
   {
     "id": "main",

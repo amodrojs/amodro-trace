@@ -4,6 +4,13 @@ A collection of modules for doing builds of AMD modules. Like the [requirejs opt
 
 This project will focus on providing some build primitives for use by other tools that may provide more comprehensive build solutions.
 
+Motiviations for this project:
+
+* source maps
+* more custom build processes, different way to input "files" and their "contents".
+* r.js came out of the pre-node JS world, where more batteries needed to be included. For example, r.js runs in xpcshell, rhino, Nashorn and the browser.
+As such, it has a lot of config options. While this project allows smaller, finer grained module tracing for builds, it means the end user or intermediate tools need to worry about composing this functionality.
+
 ## Install
 
 This project assumes node/iojs, and is installed vi npm:
@@ -40,6 +47,8 @@ In order:
 * defines
 * packages (after defines, that should work out?)
 
+
+## How to modify config. Is that amodro-config?
 
 ## Not supported
 

@@ -19,7 +19,7 @@ function assertMatch(id, traced) {
 
   // Clean traced to match across platform/file systems
   traced.forEach(function(entry) {
-    if (entry.path.indexOf('!') === -1) {
+    if (entry.path && entry.path.indexOf('!') === -1) {
       entry.path = entry.path
              // Remove file system specific prefix.
              .replace(dir, '')
@@ -48,8 +48,8 @@ function runTrace(done, name, options, config, matchId) {
   }
 
   trace(options, config)
-  .then(function(traced) {
-    assertMatch(matchId || name, traced);
+  .then(function(result) {
+    assertMatch(matchId || name, result.traced);
     done();
   }).catch(function(err) {
     done(err);

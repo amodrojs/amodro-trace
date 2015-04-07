@@ -53,7 +53,7 @@ _options.wrapShim: just document it, include test after also allowing return of 
 
 config.shim
 
-options.warnLog for transform.
+options.logger.warn for transform.
 
 * indicate plugin resources in output, guess at file path?
 * how to deal with streams, like a gulp thing?

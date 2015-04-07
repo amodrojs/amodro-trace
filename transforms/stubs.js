@@ -1,9 +1,17 @@
 'use strict';
 var lang = require('../lib/lang');
 
-module.exports = function stubs(stubModules) {
+/**
+ * Replaces module content for a given set of module IDs with stub define calls.
+ * @param  {Object} options object for holding options. Supported options:
+ * - stubModules: Array of module IDs to place in stubs.
+ * @return {Function} A function that can be used for multiple content transform
+ * calls.
+ */
+module.exports = function stubs(options) {
+
   return function(context, moduleName, filePath, contents) {
-    if (stubModules && stubModules.indexOf(moduleName) !== -1) {
+    if (options.stubModules && options.stubModules.indexOf(moduleName) !== -1) {
       //Just want to insert a simple module definition instead
       //of the source module. Useful for plugins that inline
       //all their resources.
@@ -19,4 +27,5 @@ module.exports = function stubs(stubModules) {
       return contents;
     }
   };
+
 };

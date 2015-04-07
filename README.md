@@ -27,6 +27,23 @@ The general pipeline:
 .findNestedDependencies
 
 
+???
+.namespace ?
+.stubModules ?
+
+## transforms
+
+In order:
+
+* plugins
+* stubs
+* defines
+* packages (after defines, that should work out?)
+
+
+## Not supported
+
+* namespace
 
 
 ## TODO
@@ -35,6 +52,8 @@ _options.wrapShim: just document it, include test after also allowing return of 
 
 
 config.shim
+
+options.warnLog for transform.
 
 * indicate plugin resources in output, guess at file path?
 * how to deal with streams, like a gulp thing?

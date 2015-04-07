@@ -17,6 +17,9 @@ var Prom = require('./lib/prom'),
  * - keepLoader: Boolean. Keep the loader instance and pass it in the return
  *   value. This is useful if transforms that depend on the instance's context
  *   will be used to transform the contents.
+ * - logger: Object of logging functions. Currently only logger.warn and
+ *   logger.error is used. Useful for surfacing errors without assuming that
+ *   using stdin or stderr is desired.
  * @param  {Object} loaderConfig the requirejs loader config to use for tracing
  * and finding modules.
  * @return {Object} The trace result.
@@ -48,13 +51,39 @@ module.exports = function trace(options, loaderConfig) {
         // If a loader plugin, try to guess the path instead of use the ID as
         // the filePath.
         if (id.indexOf('!') !== -1) {
-          var map = context.makeModuleMap(id);
-          if (exists(map.name)) {
-            filePath = map.name;
-          } else if (exists(map.name + '.' + map.prefix)) {
-            filePath = map.name + '.' + map.prefix;
-          } else {
-            filePath = null;
+          var ext, modifiedName, resourcePath,
+              map = context.makeModuleMap(id),
+              name = map.name;
+
+          var lastIndex = name.lastIndexOf('.');
+          if (lastIndex !== -1) {
+            ext = name.substring(lastIndex);
+            modifiedName = name.substring(0, lastIndex);
+            resourcePath = context.nameToUrl(modifiedName, ext, true);
+            if (exists(resourcePath)) {
+              filePath = resourcePath;
+            } else {
+              resourcePath = null;
+            }
+          }
+
+          // Try to find a path that might correspond to the loader plugin by
+          // looking for the following in priority order:
+          // * resourceId[.extension]
+          // * resourceId
+          // * resourceId.pluginId.
+          if (!resourcePath) {
+            resourcePath = context.nameToUrl(name, '', true);
+            if (exists(resourcePath)) {
+              filePath = resourcePath;
+            } else {
+              resourcePath = context.nameToUrl(name, '.' + map.prefix, true);
+              if (exists(resourcePath)) {
+                filePath = resourcePath;
+              } else {
+                filePath = null;
+              }
+            }
           }
         }
 
@@ -67,7 +96,7 @@ module.exports = function trace(options, loaderConfig) {
         }
 
         if (options.includeContents && filePath) {
-          var contents = context._cachedFileContents[filePath];
+          var contents = context._tracedTranslatedContents[filePath];
           if (!contents && exists(filePath)) {
             contents = context.cacheRead(filePath) || '';
             if (options.translate) {

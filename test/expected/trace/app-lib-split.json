@@ -1,0 +1,26 @@
+[
+  {
+    "id": "alter",
+    "path": "source/trace/app-lib-split/lib/alter.js"
+  },
+  {
+    "id": "app/helpers/clean",
+    "path": "source/trace/app-lib-split/app/helpers/clean.js"
+  },
+  {
+    "id": "text",
+    "path": "source/trace/app-lib-split/lib/text.js"
+  },
+  {
+    "id": "text!app/templates/list.html",
+    "path": "source/trace/app-lib-split/app/templates/list.html"
+  },
+  {
+    "id": "app/main",
+    "path": "source/trace/app-lib-split/app/main.js"
+  },
+  {
+    "id": "app",
+    "path": "source/trace/app-lib-split/app.js"
+  }
+]

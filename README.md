@@ -73,9 +73,7 @@ options.logger.warn for transform.
 More tests from r.js dir
 
 * shim in particular.
-* paths config, are paths normalized?
-* does the guessing work right for plugin resources? need to use nameToUrl on the map.name part.
 * test transforms, do they work?
 * confirm the includeContents is the translated source.
-
+* test logger in trace and in transform.
 

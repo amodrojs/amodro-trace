@@ -3,12 +3,17 @@
 
 var cjsTranslate = require('../cjsTranslate'),
     fs = require('fs'),
+    parse = require('../parse'),
     path = require('path'),
     assert = require('assert'),
     trace = require('../trace'),
     backSlashRegExp = /\\/g,
     dir = __dirname,
     baseDir = path.join(dir, 'source', 'trace');
+
+function readFile(filePath) {
+  return fs.readFileSync(filePath, 'utf8');
+}
 
 function assertMatch(id, traced) {
   // console.log('TRACED: ' + id + ':\n' +
@@ -47,8 +52,14 @@ function runTrace(done, name, options, config, matchId) {
     };
   }
 
+  // Set up rootDir
+  options.rootDir = path.join(baseDir, name);
+
   trace(options, config)
   .then(function(result) {
+    // console.log('TRACE RESULT: ' + name + ':\n' +
+    //             JSON.stringify(result, null, '  '));
+
     assertMatch(matchId || name, result.traced);
     done();
   }).catch(function(err) {
@@ -58,12 +69,11 @@ function runTrace(done, name, options, config, matchId) {
 
 // Start the tests
 describe('trace', function() {
-  it('simple', function(done) {
-    runTrace(done, 'simple', { id: 'main' });
-  });
+  it('app-lib-split', function(done) {
+    var configPath = path.join(baseDir, 'app-lib-split', 'app.js');
+    var config = parse.findConfig(readFile(configPath)).config;
 
-  it('plugin', function(done) {
-    runTrace(done, 'plugin', { id: 'main' });
+    runTrace(done, 'app-lib-split', { id: 'app' }, config);
   });
 
   it('cjs', function(done) {
@@ -76,15 +86,23 @@ describe('trace', function() {
     });
   });
 
-  it('nested-nonesting', function(done) {
-    runTrace(done, 'nested', { id: 'main' }, null, 'nested-nonesting');
-  });
-
-  it('nested-nonesting', function(done) {
+  it('nested', function(done) {
     runTrace(done, 'nested', {
       id: 'main',
       findNestedDependencies: true
     });
+  });
+
+  it('nested-nonesting', function(done) {
+    runTrace(done, 'nested', { id: 'main' }, null, 'nested-nonesting');
+  });
+
+  it('plugin', function(done) {
+    runTrace(done, 'plugin', { id: 'main' });
+  });
+
+  it('simple', function(done) {
+    runTrace(done, 'simple', { id: 'main' });
   });
 
 });

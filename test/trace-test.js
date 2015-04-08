@@ -4,7 +4,7 @@
 var allWriteTransforms = require('../write/all'),
     readCjs = require('../read/cjs'),
     fs = require('fs'),
-    parse = require('../parse'),
+    amodroConfig = require('../config'),
     path = require('path'),
     assert = require('assert'),
     trace = require('../trace'),
@@ -72,14 +72,14 @@ function runTrace(done, name, options, config, matchId) {
 describe('trace', function() {
   it('app-lib-split', function(done) {
     var configPath = path.join(baseDir, 'app-lib-split', 'app.js');
-    var config = parse.findConfig(readFile(configPath)).config;
+    var config = amodroConfig.find(readFile(configPath));
 
     runTrace(done, 'app-lib-split', { id: 'app' }, config);
   });
 
   it('app-lib-split-content-transform', function(done) {
     var configPath = path.join(baseDir, 'app-lib-split', 'app.js');
-    var config = parse.findConfig(readFile(configPath)).config;
+    var config = amodroConfig.find(readFile(configPath));
     var options = {
       id: 'app',
       writeTransform: allWriteTransforms({

@@ -4,7 +4,7 @@
  */
 'use strict';
 
-var parse = require('../parse');
+var parse = require('../lib/parse');
 
 module.exports = function cjs(fileName, fileContents) {
   // Strip out comments.

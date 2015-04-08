@@ -1,7 +1,7 @@
 'use strict';
 var defines = require('./defines'),
     lang = require('../lib/lang'),
-    parse = require('../parse');
+    parse = require('../lib/parse');
 
 /**
  * For modules that are inside a package config, this transform will write out

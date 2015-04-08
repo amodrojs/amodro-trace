@@ -1,16 +1,29 @@
 'use strict';
 var Prom = require('./lib/prom'),
-    Loader = require('./lib/loader/Loader'),
-    exists = require('fs').existsSync || require('path').existsSync;
+    Loader = require('./lib/loader/Loader');
 
 /**
  * Returns the set of nested dependencies for a given module ID in the options.
  * @param  {Object} options the set of options for trace. Possible options:
  * - id: String. the module ID to trace.
+ * - fileRead: Function. A function that synchronously returns the file contents
+ *   for the given file path. Allows overriding where file contents come from,
+ *   for instance, building up an in-memory map of file names and contents from
+ *   a stream. Arguments passed to this function:
+ *   function(defaultReadFunction, moduleName, filePath) {}
+ *   Where defaultReadFunction is the default read function used. You can call
+ *   it with the filePath to get the contents via the normal file methods this
+ *   module uses to get file contents.
+ * - fileExists: Function. If fileRead is provided, this function should be
+ *   provided too. Determines if a file exists for the mechanism that reads
+ *   files. A synchronous Boolean answer is expected. Signature is:
+ *   function(defaultExistsFunction, moduleName, filePath) {}
+ *   Where defaultExistsFunction is the default exists function used by the
+ *   internals of this module.
  * - readTransform: Function. A function that is used to transform the contents
  *   of the modules after the contents are read but before they are parsed for
  *   module APIs. The function will receive these arguments:
- *   function(moduleName, url, contents), and should synchronously return a
+ *   function(moduleName, filePath, contents), and should synchronously return a
  *   string that will be used as the contents.
  * - includeContents: Boolean. Set to true if the contents of the modules should
  *   be included in the output. The contents will be the contents after the
@@ -70,7 +83,7 @@ module.exports = function trace(options, loaderConfig) {
             ext = name.substring(lastIndex);
             modifiedName = name.substring(0, lastIndex);
             resourcePath = context.nameToUrl(modifiedName, ext, true);
-            if (exists(resourcePath)) {
+            if (context.fileExists(id, resourcePath)) {
               filePath = resourcePath;
             } else {
               resourcePath = null;
@@ -84,11 +97,11 @@ module.exports = function trace(options, loaderConfig) {
           // * resourceId.pluginId.
           if (!resourcePath) {
             resourcePath = context.nameToUrl(name, '', true);
-            if (exists(resourcePath)) {
+            if (context.fileExists(id, resourcePath)) {
               filePath = resourcePath;
             } else {
               resourcePath = context.nameToUrl(name, '.' + map.prefix, true);
-              if (exists(resourcePath)) {
+              if (context.fileExists(id, resourcePath)) {
                 filePath = resourcePath;
               } else {
                 filePath = null;
@@ -107,8 +120,8 @@ module.exports = function trace(options, loaderConfig) {
 
         if (options.includeContents && filePath) {
           var contents = context._readTransformedContents[filePath];
-          if (!contents && exists(filePath)) {
-            contents = context.cacheRead(filePath) || '';
+          if (!contents && context.fileExists(id, filePath)) {
+            contents = context.fileRead(id, filePath) || '';
             if (options.writeTransform) {
               contents = options
                          .writeTransform(context, id, filePath, contents);

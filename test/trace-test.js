@@ -2,12 +2,14 @@
 'use strict';
 
 var allWriteTransforms = require('../write/all'),
-    readCjs = require('../read/cjs'),
-    fs = require('fs'),
     amodroConfig = require('../config'),
-    path = require('path'),
     assert = require('assert'),
+    fs = require('fs'),
+    lang = require('../lib/lang'),
+    path = require('path'),
+    readCjs = require('../read/cjs'),
     trace = require('../trace'),
+
     backSlashRegExp = /\\/g,
     dir = __dirname,
     baseDir = path.join(dir, 'source', 'trace');
@@ -58,8 +60,8 @@ function runTrace(done, name, options, config, matchId) {
 
   trace(options, config)
   .then(function(result) {
-    console.log('TRACE RESULT: ' + name + ':\n' +
-                JSON.stringify(result, null, '  '));
+    // console.log('TRACE RESULT: ' + name + ':\n' +
+    //             JSON.stringify(result, null, '  '));
 
     assertMatch(matchId || name, result.traced);
     done();
@@ -103,6 +105,32 @@ describe('trace', function() {
         var result = readCjs(url, contents);
         return result;
       }
+    });
+  });
+
+  it('file-read', function(done) {
+    var fileMap = {
+      main: 'require([\'a\'], function(a) {});',
+      a: 'define([\'b\'], function(b) { return { name: \'a\', b: b }; });'
+    };
+
+    runTrace(done, 'file-read', {
+      id: 'main',
+      fileExists: function(defaultExists, id, filePath) {
+        var result = lang.hasProp(fileMap, id);
+        if (!result) {
+          result = defaultExists(id, filePath);
+        }
+        return result;
+      },
+      fileRead: function(defaultRead, id, filePath) {
+        var contents = lang.getOwn(fileMap, id);
+        if (!contents) {
+          contents = defaultRead(id, filePath);
+        }
+        return contents;
+      },
+      includeContents: true
     });
   });
 

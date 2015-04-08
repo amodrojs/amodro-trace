@@ -66,8 +66,6 @@ config.shim
 
 options.logger.warn for transform.
 
-* how to deal with streams, like a gulp thing?
-  * .read option, that can replace the cacheRead function?
 * license: bsd also, dojo foundation
 * load error in Loader.js still propagate correctly?
 * clean up readme

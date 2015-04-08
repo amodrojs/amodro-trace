@@ -24,6 +24,7 @@ var lang = require('../lib/lang'),
  * calls.
  */
 function defines(options) {
+  options = options || {};
 
   return function(context, moduleName, filePath, contents) {
     var config = context.config,

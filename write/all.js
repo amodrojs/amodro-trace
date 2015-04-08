@@ -19,6 +19,8 @@ var transforms = [
  * calls.
  */
 module.exports = function all(options) {
+  options = options || {};
+
   var transformFns = transforms.map(function(transform) {
     return transform(options);
   });

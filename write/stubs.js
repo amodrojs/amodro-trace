@@ -9,6 +9,7 @@ var lang = require('../lib/lang');
  * calls.
  */
 module.exports = function stubs(options) {
+  options = options || {};
 
   return function(context, moduleName, filePath, contents) {
     if (options.stubModules && options.stubModules.indexOf(moduleName) !== -1) {

@@ -15,6 +15,7 @@ var defines = require('./defines'),
  * calls.
  */
 function packages(options) {
+  options = options || {};
 
   return function(context, moduleName, filePath, contents) {
     var hasPackageName;

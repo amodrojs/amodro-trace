@@ -15,6 +15,7 @@ var lang = require('../lib/lang'),
  * calls.
  */
 module.exports = function plugins(options) {
+  options = options || {};
 
   return function(context, moduleName, filePath, contents) {
     var parts = context.makeModuleMap(moduleName),

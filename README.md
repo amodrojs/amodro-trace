@@ -1,6 +1,6 @@
 # amodro-trace
 
-[AMD module](https://github.com/amdjs/amdjs-api) tracing for build processes.
+[AMD](https://github.com/amdjs/amdjs-api) module tracing for build processes.
 
 Like the [requirejs optimizer](http://requirejs.org/docs/optimization.html), but just traces a module ID for its nested dependencies, and the result is a data structure for that trace, instead of a fully optimized build.
 
@@ -229,7 +229,40 @@ This project runs in node/iojs, and is installed via npm:
 amodro-trace(options, loaderConfig);
 ```
 
-Returns a Promise. `loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-config](#amodro-traceconfig) can help with that.
+Returns a Promise. The resolved value will be a result object that looks like this:
+
+```json
+{
+  traced: [
+    {
+      "id": "b",
+      "path": "/full/path/to/www/lib/b.js",
+      "contents": "define('b',{\n  name: 'b'\n});\n"
+    },
+    {
+      "id": "a",
+      "path": "/full/path/to/www/lib/a.js",
+      "contents": "define('a',['b'], function(b) { return { name: 'a', b: b }; });"
+    },
+    {
+      "id": "app/main",
+      "path": "/full/path/to/www/app/main.js",
+      "contents": "define('app/main',['require','a'],{\n  console.log(require('a');\n});\n"
+    },
+    {
+      "id": "app",
+      "path": "/full/path/to/www/app.js",
+      "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n"
+    }
+  ]
+}
+```
+
+The `contents` property for an entry is only included if the [includeContents](#includecontents) or [writeTransform](#writetransform) options are used. If [keepLoader](#keeploader) option is used, the result object will include a `loader` property.
+
+The `traced` results are order by least dependent to more dependent. So, modules with no dependencies come first.
+
+`loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-config](#amodro-traceconfig) can help with that.
 
 ### options
 
@@ -290,7 +323,35 @@ Function. When contents are added to the result, run this function to allow tran
 
 ### keepLoader
 
-Boolean. Keep the loader instance and pass it in the return value. This is useful if transforms that depend on the instance's context will be used to transform the contents, and where writeTransform is not the right fit.
+Boolean. Keep the loader instance and pass it in the return value. This is useful if transforms that depend on the instance's context will be used to transform the contents, and where `writeTransform` is not the right fit.
+
+The traced result will include a `loader` property with the loader instance. You should call `loader.discard()` when you are done using it, to help clean up resources used by the loader.
+
+If manually calling some transforms that would normally be called via writeTransform, you can use `loader.getContext()` to get the context object passed to those transforms. Example:
+
+```javascript
+var amodroTrace = require('amodro-trace');
+
+// Use the defines write transform manually.
+var defineTransform = require('amodro-trace/write/defines')({});
+
+amodroTrace({}, {}).then(function(traceResult) {
+  var traced = traceResult.traced,
+      loader = traceResult.loader,
+      context = loader.getContext();
+
+  // Iterate over all the traced items and modify their contents in some way.
+  traced.forEach(function(item) {
+    item.contents = defineTransform(context, item.id, item.path, item.contents);
+  });
+
+  // All done with the loader
+  loader.discard();
+}).catch(function(error) {
+  console.error(error);
+});
+
+```
 
 ### logger
 
@@ -300,7 +361,7 @@ Object of logging functions. Currently only logger.warn and logger.error is used
 
 This module helps extract or modify a require.config()/requirejs.config() config inside a JS file. The API methods on this module:
 
-### config.find
+#### config.find
 
 Finds the first requirejs/require call to require[js].config/require({}) in a file and returns the value as an object. Will not work with configs that use variable references outside of the config definition. In general, config calls that look more like JSON will work best.
 
@@ -314,7 +375,7 @@ Aruguments to `find`:
 
 Returns an Object with the config. Could be `undefined` if a config is not found.
 
-### config.modify
+#### config.modify
 
 Modify the contents of a require.config/requirejs.config call and places the modifications bac in the contents. This call will LOSE any existing comments that are in the config string.
 

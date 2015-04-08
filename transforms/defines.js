@@ -1,6 +1,5 @@
 'use strict';
 var lang = require('../lib/lang'),
-    packages = require('./packages'),
     transform = require('../lib/transform'),
     falseProp = lang.falseProp,
     getOwn = lang.getOwn,
@@ -28,7 +27,7 @@ function defines(options) {
 
   return function(context, moduleName, filePath, contents) {
     var config = context.config,
-        packageName = packages.getPackageName(context, moduleName);
+        packageName = require('./packages').getPackageName(context, moduleName);
 
     contents = defines.toTransport(context, moduleName,
                                    filePath, contents, options);
@@ -37,7 +36,7 @@ function defines(options) {
     //put in a placeholder call so the require does not try to load them
     //after the module is processed.
     //If we have a name, but no defined module, then add in the placeholder.
-    if (moduleName && falseProp(context.modulesWithNames, moduleName)) {
+    if (moduleName && falseProp(context._layer.modulesWithNames, moduleName)) {
       var shim = config.shim && (getOwn(config.shim, moduleName) ||
                  (packageName && getOwn(config.shim, packageName)));
       if (shim) {
@@ -95,7 +94,7 @@ defines.toTransport = function(context, moduleName,
     //Only mark this module as having a name if not a named module,
     //or if a named module and the name matches expectations.
     if (context && (info.needsId || info.foundId === moduleName)) {
-      context.modulesWithNames[moduleName] = true;
+      context._layer.modulesWithNames[moduleName] = true;
     }
   }
 

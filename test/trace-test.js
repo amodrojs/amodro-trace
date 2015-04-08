@@ -1,7 +1,8 @@
 /*global describe, it */
 'use strict';
 
-var cjsTranslate = require('../cjsTranslate'),
+var allTransforms = require('../transforms/all'),
+    cjsTranslate = require('../cjsTranslate'),
     fs = require('fs'),
     parse = require('../parse'),
     path = require('path'),
@@ -57,8 +58,8 @@ function runTrace(done, name, options, config, matchId) {
 
   trace(options, config)
   .then(function(result) {
-    // console.log('TRACE RESULT: ' + name + ':\n' +
-    //             JSON.stringify(result, null, '  '));
+    console.log('TRACE RESULT: ' + name + ':\n' +
+                JSON.stringify(result, null, '  '));
 
     assertMatch(matchId || name, result.traced);
     done();
@@ -69,40 +70,61 @@ function runTrace(done, name, options, config, matchId) {
 
 // Start the tests
 describe('trace', function() {
-  it('app-lib-split', function(done) {
+  // it('app-lib-split', function(done) {
+  //   var configPath = path.join(baseDir, 'app-lib-split', 'app.js');
+  //   var config = parse.findConfig(readFile(configPath)).config;
+
+  //   runTrace(done, 'app-lib-split', { id: 'app' }, config);
+  // });
+
+  it('app-lib-split-content-transform', function(done) {
     var configPath = path.join(baseDir, 'app-lib-split', 'app.js');
     var config = parse.findConfig(readFile(configPath)).config;
+    var options = {
+      rootDir: path.join(baseDir, 'app-lib-split'),
+      id: 'app',
+      contentTransform: allTransforms({
+        stubModules: ['text'],
+        logger: {
+          warn: function(msg) {
+            console.warn(msg);
+          }
+        }
+      })
+    };
 
-    runTrace(done, 'app-lib-split', { id: 'app' }, config);
+    runTrace(done, 'app-lib-split',
+             options, config, 'app-lib-split-content-transform');
   });
 
-  it('cjs', function(done) {
-    runTrace(done, 'cjs', {
-      id: 'lib',
-      translate: function(id, url, contents) {
-        var result = cjsTranslate(url, contents);
-        return result;
-      }
-    });
-  });
 
-  it('nested', function(done) {
-    runTrace(done, 'nested', {
-      id: 'main',
-      findNestedDependencies: true
-    });
-  });
+  // it('cjs', function(done) {
+  //   runTrace(done, 'cjs', {
+  //     id: 'lib',
+  //     translate: function(id, url, contents) {
+  //       var result = cjsTranslate(url, contents);
+  //       return result;
+  //     }
+  //   });
+  // });
 
-  it('nested-nonesting', function(done) {
-    runTrace(done, 'nested', { id: 'main' }, null, 'nested-nonesting');
-  });
+  // it('nested', function(done) {
+  //   runTrace(done, 'nested', {
+  //     id: 'main',
+  //     findNestedDependencies: true
+  //   });
+  // });
 
-  it('plugin', function(done) {
-    runTrace(done, 'plugin', { id: 'main' });
-  });
+  // it('nested-nonesting', function(done) {
+  //   runTrace(done, 'nested', { id: 'main' }, null, 'nested-nonesting');
+  // });
 
-  it('simple', function(done) {
-    runTrace(done, 'simple', { id: 'main' });
-  });
+  // it('plugin', function(done) {
+  //   runTrace(done, 'plugin', { id: 'main' });
+  // });
+
+  // it('simple', function(done) {
+  //   runTrace(done, 'simple', { id: 'main' });
+  // });
 
 });

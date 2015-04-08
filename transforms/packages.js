@@ -21,7 +21,7 @@ function packages(options) {
 
     //If the moduleName is a package main, then hold on to the
     //packageName in case an adapter needs to be written.
-    var packageName = packages.getPackageName(moduleName);
+    var packageName = packages.getPackageName(context, moduleName);
 
     if (packageName) {
       hasPackageName = (packageName === parse.getNamedDefine(contents));

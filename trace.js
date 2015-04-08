@@ -14,9 +14,14 @@ var Prom = require('./lib/prom'),
  * - includeContents: Boolean. Set to true if the contents of the modules should
  *   be included in the output. The contents will be the contents after the
  *   translate function has run, if it is provided.
+ * - contentTransform: Function. When contents are added to the result, run
+ *   this function to allow transforming the contents. See the transforms/
+ *   directory for example transforms. Setting this option automatically sets
+ *   includeContents to be true.
  * - keepLoader: Boolean. Keep the loader instance and pass it in the return
  *   value. This is useful if transforms that depend on the instance's context
- *   will be used to transform the contents.
+ *   will be used to transform the contents, and where contentTransform is not
+ *   the right fit.
  * - logger: Object of logging functions. Currently only logger.warn and
  *   logger.error is used. Useful for surfacing errors without assuming that
  *   using stdin or stderr is desired.
@@ -95,7 +100,7 @@ module.exports = function trace(options, loaderConfig) {
           item.path = filePath;
         }
 
-        if (options.includeContents && filePath) {
+        if ((options.includeContents || options.contentTransform) && filePath) {
           var contents = context._tracedTranslatedContents[filePath];
           if (!contents && exists(filePath)) {
             contents = context.cacheRead(filePath) || '';
@@ -103,6 +108,13 @@ module.exports = function trace(options, loaderConfig) {
               contents = options.translate(id, filePath, contents);
             }
           }
+          if (contents && options.contentTransform) {
+            contents = options.contentTransform(context,
+                                                id,
+                                                filePath,
+                                                contents);
+          }
+
           item.contents = contents;
         }
 

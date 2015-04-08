@@ -73,7 +73,7 @@ options.logger.warn for transform.
 More tests from r.js dir
 
 * shim in particular.
-* test transforms, do they work?
+* test transforms/, do they work?
 * confirm the includeContents is the translated source.
 * test logger in trace and in transform.
 

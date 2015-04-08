@@ -1,5 +1,5 @@
 'use strict';
-var lang = require('lang'),
+var lang = require('../lib/lang'),
     defines = require('./defines');
 
 /**

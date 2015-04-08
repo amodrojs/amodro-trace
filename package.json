@@ -1,5 +1,5 @@
 {
-  "name": "bamodo",
+  "name": "amodro-trace",
   "version": "0.0.1",
   "description": "A collection of modules for doing builds of AMD modules",
   "main": "trace.js",
@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:jrburke/bamodo.git"
+    "url": "git@github.com:amodrojs/amodro-trace.git"
   },
   "author": "James Burke",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jrburke/bamodo/issues"
+    "url": "https://github.com/amodrojs/amodro-trace/issues"
   },
   "dependencies": {
     "esprima": "2.1.0"

@@ -1,30 +1,198 @@
-# bamodo
+# amodro-trace
 
-A collection of modules for doing builds of AMD modules. Like the [requirejs optimizer](http://requirejs.org/docs/optimization.html), but more granular steps are exposed to allow custom build toolchains.
+Tracing automaton for build processes that understand [AMD modules](https://github.com/amdjs/amdjs-api).
 
-This project will focus on providing some build primitives for use by other tools that may provide more comprehensive build solutions.
+Like the [requirejs optimizer](http://requirejs.org/docs/optimization.html), but just traces a module ID for its nested dependencies, and the result is a data structure for that trace, instead of a fully optimized build.
 
-Motiviations for this project:
+It uses requirejs underneath to do the tracing, so things like loader plugins work and it has a full understanding of AMD APIs. It can also normalize the module contents so multiple define calls can be concatenated in a file.
 
-* source maps
-* more custom build processes, different way to input "files" and their "contents".
-* r.js came out of the pre-node JS world, where more batteries needed to be included. For example, r.js runs in xpcshell, rhino, Nashorn and the browser.
-As such, it has a lot of config options. While this project allows smaller, finer grained module tracing for builds, it means the end user or intermediate tools need to worry about composing this functionality.
+Use the requirejs optimizer if you want a more complete build tool. Use this if you want more control over the build processes, and just want something to do the AMD bits.
+
+## Use cases
+
+### Dependency tree for a module ID
+
+Your build process uses a build dependency graph, like the one used by make. However, that tool does not understand module tracing. You can use this tool to figure out the graph for a given module ID. For fancier dependency graphing, [node-madge](https://github.com/pahen/madge) may be a better fit.
+
+amodro-trace focuses on starting with a single module ID, an AMD loader config, and tracing the modules that back that module ID. Example:
+
+```javascript
+var amodroTrace = require('amodro-trace'),
+    path = require('path');
+
+amodroTrace(
+  // The options for trace
+  {
+    // The root directory, usually the root of the web project, and what the
+    // AMD baseUrl is relative to. Should be an absolute path.
+    rootDir: path.join(__dirname, 'www'),
+
+    // The module ID to trace.
+    id: 'app'
+  },
+  // The loader config to use.
+  {
+    baseUrl: 'lib',
+    paths: {
+      app: '../app'
+    }
+  }
+).then(function(traceResult) {
+  // The traceResult has this structure:
+  traceResult = {
+    traced: [
+      { "id": "b", "path": "/full/path/to/www/lib/b.js" },
+      { "id": "a", "path": "/full/path/to/www/lib/a.js" },
+      { "id": "app/main", "path": "/full/path/to/www/app/main.js" }
+      { "id": "app", "path": "/full/path/to/www/app.js" }
+    ]
+  };
+}).catch(function(error) {
+  console.error(error);
+});
+```
+
+### Content transforms after AMD normalization
+
+You want a trace of the modules that may be used in a build layer, with the AMD calls normalized for file concatenation, but you want to do further work before combining them and generating the source map and minifying.
+
+The call is similar to the simple dependency tree result, but ask amodro-trace to include the contents and provide a "write" transform that normalizes the AMD calls:
+
+```javascript
+var amodroTrace = require('amodro-trace'),
+    allWriteTransforms = require("amodro-trace/write/all'),
+    path = require('path');
+
+// Create the writeTransform function by passing options to be used by the
+// write transform factories:
+var writeTransform = allWriteTransforms({
+  // See the write transforms section for options.
+});
+
+amodroTrace(
+  // The options for trace
+  {
+    rootDir: path.join(__dirname, 'www'),
+    id: 'app'
+  },
+  // The loader config to use.
+  {
+    baseUrl: 'lib',
+    paths: {
+      app: '../app'
+    }
+  },
+  includeContents: true,
+  writeTransform: writeTransform
+).then(function(traceResult) {
+  // The traceResult has this structure:
+  traceResult = {
+    traced: [
+      {
+        "id": "b",
+        "path": "/full/path/to/www/lib/b.js",
+        "contents": "define('b',{\n  name: 'b'\n});\n"
+      },
+      {
+        "id": "a",
+        "path": "/full/path/to/www/lib/a.js",
+        "contents": "define('a',['b'], function(b) { return { name: 'a', b: b }; });"
+      },
+      {
+        "id": "app/main",
+        "path": "/full/path/to/www/app/main.js",
+        "contents": "define('app/main',['require','a'],{\n  console.log(require('a');\n});\n"
+      },
+      {
+        "id": "app",
+        "path": "/full/path/to/www/app.js",
+        "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n"
+      }
+    ]
+  };
+}).catch(function(error) {
+  console.error(error);
+});
+```
+
+
+### Non-file inputs
+
+Your build tool may not deal with files directly, maybe it builds up a list of files in a stream-backed objects. Gulp as an example.
+
+The `fileExists` and `fileRead` function options allow you to do this:
+
+```javascript
+var amodroTrace = require('amodro-trace'),
+    path = require('path');
+
+// Build up an in-memory data structure for the files/modules involved.
+// This example uses module IDs as the keys, but you could decide to use paths.
+var fileMap = {
+  main: 'require([\'a\'], function(a) {});',
+  a: 'define([\'b\'], function(b) { return { name: \'a\', b: b }; });',
+  b: 'define({\n  name: 'b'\n});\n'
+};
+
+amodroTrace(
+  // The options for trace
+  {
+    // The root directory, usually the root of the web project, and what the
+    // AMD baseUrl is relative to. Should be an absolute path.
+    rootDir: path.join(__dirname, 'www'),
+
+    // The module ID to trace.
+    id: 'app',
+
+
+    // amodro-trace checks for file existence for some commands, this function
+    // allows you to override that behavior. defaultExistst is the default
+    // exists function used by amdro-trace. A synchronous boolean result is
+    // expected to be returned from this function.
+    fileExists: function(defaultExists, id, filePath) {
+      return fileMap.hasOwnProperty(id);
+    },
+
+    // You can override file reading by passing in a function for fileRead.
+    // defaultRead is the default file reading function used by amodro-trace,
+    // so you can call it if you want to delegate to that functionality. A
+    // synchronous result is expected to be returned from this function.
+    fileRead: function(defaultRead, id, filePath) {
+      return fileMap[id];
+    }
+  },
+  // The loader config to use.
+  {
+    baseUrl: 'lib',
+    paths: {
+      app: '../app'
+    }
+  }
+).then(function(traceResult) {
+  // See other examples for traceResult structure.
+}).catch(function(error) {
+  console.error(error);
+});
+```
+
+### Consuming CJS modules
+
+
 
 ## Install
 
-This project assumes node/iojs, and is installed vi npm:
+This project assumes node/iojs use, and is installed vi npm:
 
-    npm install bomodo
+    npm install amodro-trace
 
-## Use
+## API
 
-bamodo includes a set of modules that do different parts of a build pipeline. Usually the output of one of the modules can be used as input to the next module in the pipeline.
+### amodro-trace
 
-The general pipeline:
 
-* **bamodo/trace**: traces the modules given the config and returns a data structure indicating what files and loader plugin outputs go into which build layers.
-* **bamodo/config**:
+### amodro-trace/config
+
+
 
 ### trace options
 
@@ -33,45 +201,26 @@ The general pipeline:
 .findNestedDependencies
 
 
-???
-.namespace ?
 .stubModules ?
 
-## read transforms
+## Read transforms
 
+### cjs
 
-## write transforms
+## Write transforms
 
 In order:
 
-* plugins
-* stubs
-* defines
-* packages (after defines, that should work out?)
+### plugins
+
+### stubs
+
+### defines
+
+### packages (after defines, that should work out?)
 
 
-## How to modify config. Is that amodro-config?
+## requirejs optimizer differences
 
-## Not supported
-
-* namespace
-
-
-## TODO
-
-_options.wrapShim: just document it, include test after also allowing return of file contents.
-
-
-config.shim
-
-options.logger.warn for transform.
-
-* license: bsd also, dojo foundation
-* load error in Loader.js still propagate correctly?
-* clean up readme
-
-More tests from r.js dir
-
-* shim in particular.
-* test logger in trace and in transform.
+The feature set and config options are smaller since it has a narrower focus. If you feel like you are missing a feature from the requirejs optimizer, it usually can be met by creating a write transform to do what you want. While this project comes with some transforms, it does not support all the transforms that the requirejs optimizer can do. For example, this project's write transforms do not understand how to make namespace builds.
 

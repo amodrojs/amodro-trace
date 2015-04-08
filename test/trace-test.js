@@ -58,8 +58,8 @@ function runTrace(done, name, options, config, matchId) {
 
   trace(options, config)
   .then(function(result) {
-    // console.log('TRACE RESULT: ' + name + ':\n' +
-    //             JSON.stringify(result, null, '  '));
+    console.log('TRACE RESULT: ' + name + ':\n' +
+                JSON.stringify(result, null, '  '));
 
     assertMatch(matchId || name, result.traced);
     done();
@@ -120,6 +120,17 @@ describe('trace', function() {
   it('plugin', function(done) {
     runTrace(done, 'plugin', { id: 'main' });
   });
+
+  it('read-transform-contents', function(done) {
+    runTrace(done, 'read-transform-contents', {
+      id: 'main',
+      includeContents: true,
+      readTransform: function(id, url, contents) {
+        return contents.replace(/'use strict';/, '');
+      }
+    });
+  });
+
 
   it('simple', function(done) {
     runTrace(done, 'simple', { id: 'main' });

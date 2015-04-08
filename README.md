@@ -24,8 +24,7 @@ bamodo includes a set of modules that do different parts of a build pipeline. Us
 The general pipeline:
 
 * **bamodo/trace**: traces the modules given the config and returns a data structure indicating what files and loader plugin outputs go into which build layers.
-* **bamodo/transform**: transforms a set of files as specified by a trace result.
-* **bamodo/combine**: combines a set of files from a trace result into a concatenated set of modules.
+* **bamodo/config**:
 
 ### trace options
 
@@ -76,6 +75,5 @@ options.logger.warn for transform.
 More tests from r.js dir
 
 * shim in particular.
-* confirm the includeContents is the translated source.
 * test logger in trace and in transform.
 

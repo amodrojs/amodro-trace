@@ -311,7 +311,10 @@ Function. A function that is used to transform the contents of the modules after
 ```javascript
 function(moduleName, filePath, contents) {}
 ```
-and should synchronously return a string that will be used as the contents. If no modifcations are done, the input contents string should be returned.
+
+and should synchronously return a string that will be used as the contents. If the readTransform does not want to alter the contents then it should just return the `contents` value passed in to it.
+
+The readTransform function is run after the file has been read (or after [fileRead](#fileread) has run), but before the text contents enter the loader for parsing and tracing. The result of the read transform is what is returned in the `contents` property for traced items if [includeContents](#includcontents) is set to `true` and no [writeTransform](#writeTransform) is specified.
 
 #### includeContents
 
@@ -319,11 +322,19 @@ Boolean. Set to true if the contents of the modules should be included in the ou
 
 #### writeTransform
 
-Function. When contents are added to the result, run this function to allow transforming the contents. See the write/ directory for example transforms. Setting this option automatically sets includeContents to be true.
+Function. When contents are added to the result, run this function to allow transforming the contents. See the [write transforms](##write-transforms) section for example transforms. Setting this option automatically sets includeContents to be true. `writeTransform` should be a function with this signature:
+
+```javascript
+function(context, moduleName, filePath, contents) {}
+```
+
+Where `context` is a loader context object created by the internal loader object used by amodro-trace. This object is mostly used by the write transforms included in this project, since they coordinate and deal with some of the results of the parsing, like what files needs AMD wrappers or normalization. It should be treated as an opaque object.
+
+The function should synchronously return the value that should be used as the new value for `contents`. If the writeTransform does not want to alter the contents then it should just return the `contents` value passed in to it.
 
 ### keepLoader
 
-Boolean. Keep the loader instance and pass it in the return value. This is useful if transforms that depend on the instance's context will be used to transform the contents, and where `writeTransform` is not the right fit.
+Boolean. Keep the loader instance and pass it in the return value. This is useful if transforms that depend on the instance's context will be used to transform the contents, and where `writeTransform` is not the right fit. For most uses though, `writeTransform` should be preferred over manually using the loader instance.
 
 The traced result will include a `loader` property with the loader instance. You should call `loader.discard()` when you are done using it, to help clean up resources used by the loader.
 
@@ -397,20 +408,114 @@ Returns a String the contents with the config changes applied.
 
 ## Read transforms
 
+See the [readTransform](#readtransform) option for background on read transforms. This section describes read transforms provided by this project.
+
 ### cjs
+
+To use:
+
+```javascript
+var cjsTransform = require('amodro-trace/read/cjs');
+```
+
+If the transform detects CommonJS usage without an AMD or UMD wrapper that includes an AMD branch, then the text will be wrapped in a `define(function(require, exports, module){}` wrapper.
 
 ## Write transforms
 
-In order:
+See the [writeTransform](#writetransform) option for background on write transforms. This section describes the write transforms provided by this project. These transforms come from the write transforms that the requirejs optimizer would do to normalize scripts for concatenation.
+
+They are listed in the order they are suggested to be applied. There is an `amodro-trace/write/all` module that chains all of these together in the correct order. If you need an example on how to chain a few different transforms together to just provide one writeTransform to amodro-trace, look at the source of `amodro-trace/write/all`.
+
+All of these write transform modules export a function that can be called with an options object to generate the final function that should be passed to `writeTransform`. This allows one time options setup that applies to all scripts that are transformed to just happen once. This pattern is suggested in general for write transforms.
+
+### Common write transform options
+
+#### logger
+
+All of the plugins support a `logger` option, which should be an object with a warn and error functions:
+
+```javascript
+{
+  logger: {
+    warn: function(message) {
+
+    },
+    error: function(message) {
+
+    }
+  }
+}
+```
+
+Some internal amodro-trace modules may call `logger.warn` or `logger.error` for parse errors. These are considered non-fatal, in that amodro-trace will just skip further processing of those contents and return the default value for those contents.
+
+However, for debugging and figuring out why some module processing was skipped, the logger object can collect that data. This allows maximum reporting flexibility, and avoids assuming stdin or stderr are OK to use.
 
 ### plugins
 
+The `plugins` transform will ask any AMD loader plugin that was loaded during the trace for a version of the resource that works as a JS string concatenated with other JS modules.
+
+It does not have any specific options for the creation of the transform, just supports the general [logger](#logger) option.
+
+```javascript
+var plugins = require('amodro-trace/write/plugins');
+var pluginTransform = plugins({});
+
+require('amodro-trace')({
+  writeTransform: pluginTransform
+});
+```
+
 ### stubs
+
+The `stubs` transform will replace a given set of module IDs with stub `define()` calls instead of the original contents of the modules. This is useful for modules that are not needed in full after a build and just need to be registered as being satisfied dependencies.
+
+```javascript
+var stubs = require('amodro-trace/write/stubs');
+var stubsTransform = stubs({
+  // An array of exact module IDs to stub out.
+  stubModules: ['text', 'a/b']
+});
+
+require('amodro-trace')({
+  writeTransform: stubsTransform
+});
+```
 
 ### defines
 
-### packages (after defines, that should work out?)
+The `defines` transform will normalize `define` calls to include the module ID and parse out the dependencies so that Function.prototype.String is not needed at runtime to find dependencies. It will also add in some `define` calls for [shimmed dependencies]().
 
+This transform is the one that normally is always needed. The other transforms could be avoided depending on project needs.
+
+The only specific option for this transform is `wrapShim`. It provides wrapping of shim values similar to the [requirejs optimizer option of the same name](https://github.com/jrburke/r.js/blob/b012ab2459760d30437f0febfb7d1640fb7c6287/build/example.build.js#L80). Normally this should not be needed. Only set it to true for specific cases.
+
+```javascript
+var defines = require('amodro-trace/write/defines');
+var definesTransform = defines({
+  wrapShim: true
+});
+
+require('amodro-trace')({
+  writeTransform: definesTransform
+});
+```
+
+### packages
+
+The `packages` transform will write out an adapter `define()` for a [packages config]() main module value so that package config is not needed to map 'packageName' to 'packageName/mainModuleId'.
+
+It does not have any transform-specific options, it just supports the general [logger](#logger) option.
+
+
+```javascript
+var packages = require('amodro-trace/write/packages');
+var packagesTransform = packages({});
+
+require('amodro-trace')({
+  writeTransform: packagesTransform
+});
+```
 
 ## requirejs optimizer differences
 

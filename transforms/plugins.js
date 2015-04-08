@@ -26,8 +26,10 @@ module.exports = function plugins(options) {
           contents = input;
         };
         writeApi.asModule = function (moduleName, input) {
-          defines.toTransport(context, moduleName, filePath, input, options);
+          contents = defines.toTransport(context, moduleName,
+                                         filePath, input, options);
         };
+
         builder.write(parts.prefix, parts.name, writeApi);
       }
     }

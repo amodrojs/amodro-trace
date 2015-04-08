@@ -22,8 +22,9 @@ var config = {
   },
 
   /**
-   * Modify the contents of a require.config/requirejs.config call. This
-   * call will LOSE any existing comments that are in the config string.
+   * Modify the contents of a require.config/requirejs.config call and places
+   * the modifications bac in the contents. This call will LOSE any existing
+   * comments that are in the config string.
    *
    * @param  {String} contents String that may contain a config call
    * @param  {Function} onConfig Function called when the first config

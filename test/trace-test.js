@@ -14,6 +14,10 @@ var allWriteTransforms = require('../write/all'),
     dir = __dirname,
     baseDir = path.join(dir, 'source', 'trace');
 
+// ****************************************************
+// Support functions
+// ****************************************************
+
 function readFile(filePath) {
   return fs.readFileSync(filePath, 'utf8');
 }
@@ -70,7 +74,10 @@ function runTrace(done, name, options, config, matchId) {
   });
 }
 
-// Start the tests
+// ****************************************************
+// Tests
+// ****************************************************
+
 describe('trace', function() {
   it('app-lib-split', function(done) {
     var configPath = path.join(baseDir, 'app-lib-split', 'app.js');

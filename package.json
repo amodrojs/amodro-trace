@@ -1,7 +1,7 @@
 {
   "name": "amodro-trace",
   "version": "0.0.1",
-  "description": "A collection of modules for doing builds of AMD modules",
+  "description": "AMD module tracing for build processes.",
   "main": "trace.js",
   "scripts": {
     "test": "node_modules/.bin/mocha test"
@@ -10,8 +10,17 @@
     "type": "git",
     "url": "git@github.com:amodrojs/amodro-trace.git"
   },
-  "author": "James Burke",
-  "license": "MIT",
+  "author": "James Burke <jrburke@gmail.com> (http://github.com/jrburke)",
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "https://github.com/amodrojs/amodro-trace/blob/master/LICENSE"
+    },
+    {
+      "type": "MIT",
+      "url": "https://github.com/amodrojs/amodro-trace/blob/master/LICENSE"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/amodrojs/amodro-trace/issues"
   },

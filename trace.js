@@ -5,7 +5,18 @@ var Prom = require('./lib/prom'),
 /**
  * Returns the set of nested dependencies for a given module ID in the options.
  * @param  {Object} options the set of options for trace. Possible options:
+ * - rootDir: String. The full path to the root of the project to be scanned.
+ *   This is usually the top level directory of the project that is served to
+ *   the web, and the reference directory for relative baseUrls in an AMD loader
+ *   config.
  * - id: String. the module ID to trace.
+ * - findNestedDependencies: Boolean. Defaults to false. Normally require([])
+ *   calls inside a define()'d module are not traced, as they are usually meant
+ *   to be dynamically loaded dependencies and are not static module
+ *   dependencies. However, for some tracing cases it is useful to know these
+ *   dynamic dependencies. Setting this option to true will do that. It only
+ *   captures require([]) calls that use string literals for dependency IDs. It
+ *   cannot trace dependency IDs that are variables for JS expressions.
  * - fileRead: Function. A function that synchronously returns the file contents
  *   for the given file path. Allows overriding where file contents come from,
  *   for instance, building up an in-memory map of file names and contents from
@@ -37,8 +48,8 @@ var Prom = require('./lib/prom'),
  *   will be used to transform the contents, and where writeTransform is not
  *   the right fit.
  * - logger: Object of logging functions. Currently only logger.warn and
- *   logger.error is used. Useful for surfacing errors without assuming that
- *   using stdin or stderr is desired.
+ *   logger.error is used. Useful for surfacing errors without assuming stdin or
+ *   stderr should be used.
  * @param  {Object} loaderConfig the requirejs loader config to use for tracing
  * and finding modules.
  * @return {Object} The trace result.

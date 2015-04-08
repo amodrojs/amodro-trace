@@ -1,6 +1,6 @@
 # amodro-trace
 
-Tracing automaton for build processes that understand [AMD modules](https://github.com/amdjs/amdjs-api).
+[AMD module](https://github.com/amdjs/amdjs-api) tracing for build processes.
 
 Like the [requirejs optimizer](http://requirejs.org/docs/optimization.html), but just traces a module ID for its nested dependencies, and the result is a data structure for that trace, instead of a fully optimized build.
 
@@ -14,7 +14,7 @@ Use the requirejs optimizer if you want a more complete build tool. Use this if 
 
 Your build process uses a build dependency graph, like the one used by make. However, that tool does not understand module tracing. You can use this tool to figure out the graph for a given module ID. For fancier dependency graphing, [node-madge](https://github.com/pahen/madge) may be a better fit.
 
-amodro-trace focuses on starting with a single module ID, an AMD loader config, and tracing the modules that back that module ID. Example:
+amodro-trace starts with a single module ID, an AMD loader config, and traces the dependency tree that module ID. Example:
 
 ```javascript
 var amodroTrace = require('amodro-trace'),
@@ -30,7 +30,7 @@ amodroTrace(
     // The module ID to trace.
     id: 'app'
   },
-  // The loader config to use.
+  // The AMD loader config to use.
   {
     baseUrl: 'lib',
     paths: {
@@ -73,17 +73,18 @@ amodroTrace(
   // The options for trace
   {
     rootDir: path.join(__dirname, 'www'),
-    id: 'app'
+    id: 'app',
+
+    includeContents: true,
+    writeTransform: writeTransform
   },
-  // The loader config to use.
+  // The AMD loader config to use.
   {
     baseUrl: 'lib',
     paths: {
       app: '../app'
     }
-  },
-  includeContents: true,
-  writeTransform: writeTransform
+  }
 ).then(function(traceResult) {
   // The traceResult has this structure:
   traceResult = {
@@ -118,7 +119,7 @@ amodroTrace(
 
 ### Non-file inputs
 
-Your build tool may not deal with files directly, maybe it builds up a list of files in a stream-backed objects. Gulp as an example.
+Your build tool may not deal with files directly, maybe it builds up a list of files in a stream-backed objects. [Gulp](http://gulpjs.com/) for example.
 
 The `fileExists` and `fileRead` function options allow you to do this:
 
@@ -144,24 +145,24 @@ amodroTrace(
     // The module ID to trace.
     id: 'app',
 
-
-    // amodro-trace checks for file existence for some commands, this function
-    // allows you to override that behavior. defaultExistst is the default
-    // exists function used by amdro-trace. A synchronous boolean result is
-    // expected to be returned from this function.
+    // You can ovrride the file existence checks by passing in a function for
+    // fileExists. defaultExistst is the default exists function used by this
+    // project's internals. A synchronous boolean result is expected to be
+    // returned from this function.
     fileExists: function(defaultExists, id, filePath) {
       return fileMap.hasOwnProperty(id);
     },
 
     // You can override file reading by passing in a function for fileRead.
-    // defaultRead is the default file reading function used by amodro-trace,
-    // so you can call it if you want to delegate to that functionality. A
-    // synchronous result is expected to be returned from this function.
+    // defaultRead is the default file reading function used by this project's
+    // internals. You can call it if you want to delegate to that
+    // functionality. A synchronous result is expected to be returned from this
+    // function.
     fileRead: function(defaultRead, id, filePath) {
       return fileMap[id];
     }
   },
-  // The loader config to use.
+  // The AMD loader config to use.
   {
     baseUrl: 'lib',
     paths: {
@@ -175,11 +176,11 @@ amodroTrace(
 });
 ```
 
-### Transform some files to AMD before tracing
+### Transform files to AMD before tracing
 
 If you are using a transpiled language, or want to author in CommonJS (CJS) format but output to AMD, you can provide a read transform that can modify the contents of files after they are read but before they are traced.
 
-Here is an example that uses the cjs read transform provided in this project (it just wraps CJS modules in AMD wrappers, it does not change module ID tracing rules):
+Here is an example that uses the cjs read transform provided in this project (it just wraps CJS modules in AMD wrappers, it does not change module ID resolution rules):
 
 ```javascript
 var amodroTrace = require('amodro-trace'),
@@ -200,7 +201,7 @@ amodroTrace(
       return cjsTransform(url, contents);
     }
   },
-  // The loader config to use.
+  // The AMD loader config to use.
   {
     baseUrl: 'lib',
     paths: {
@@ -216,7 +217,7 @@ amodroTrace(
 
 ## Install
 
-This project assumes node/iojs use, and is installed vi npm:
+This project runs in node/iojs, and is installed via npm:
 
     npm install amodro-trace
 
@@ -224,19 +225,114 @@ This project assumes node/iojs use, and is installed vi npm:
 
 ### amodro-trace
 
+```javascript
+amodro-trace(options, loaderConfig);
+```
+
+Returns a Promise. `loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-config](#amodro-traceconfig) can help with that.
+
+### options
+
+The following options
+
+#### rootDir
+
+String. The full path to the root of the project to be scanned. This is usually the top level directory of the project that is served to the web, and the reference directory for relative baseUrls in an AMD loader config.
+
+#### id
+
+String. the module ID to trace.
+
+#### findNestedDependencies
+
+Boolean. Defaults to false. Normally `require([])` calls inside a `define()`'d module are not traced, as they are usually meant to be dynamically loaded dependencies and are not static module dependencies.
+
+However, for some tracing cases it is useful to include these dynamic dependencies. Setting this option to true will do that. It only captures `require([])` calls that use string literals for dependency IDs. It cannot trace dependency IDs that are variables for JS expressions.
+
+#### fileRead
+
+Function. A function that synchronously returns the file contents for the given file path. Allows overriding where file contents come from, for instance, building up an in-memory map of file names and contents from a stream.
+
+Arguments passed to this function:
+
+```javascript
+function(defaultReadFunction, moduleName, filePath) {}
+```
+
+Where defaultReadFunction is the default read function used. You can call it with the filePath to get the contents via the normal file methods this module uses to get file contents.
+
+#### fileExists
+
+Function. If fileRead is provided, this function should be provided too. Determines if a file exists for the mechanism that reads files. A synchronous Boolean answer is expected. Signature is:
+
+```javascript
+function(defaultExistsFunction, moduleName, filePath) {}
+```
+
+Where defaultExistsFunction is the default exists function used by the internals of this module.
+
+#### readTransform
+
+Function. A function that is used to transform the contents of the modules after the contents are read but before they are parsed for module APIs. The function will receive these arguments:
+
+```javascript
+function(moduleName, filePath, contents) {}
+```
+and should synchronously return a string that will be used as the contents. If no modifcations are done, the input contents string should be returned.
+
+#### includeContents
+
+Boolean. Set to true if the contents of the modules should be included in the output. The contents will be the contents after the readTransform function has run, if it is provided.
+
+#### writeTransform
+
+Function. When contents are added to the result, run this function to allow transforming the contents. See the write/ directory for example transforms. Setting this option automatically sets includeContents to be true.
+
+### keepLoader
+
+Boolean. Keep the loader instance and pass it in the return value. This is useful if transforms that depend on the instance's context will be used to transform the contents, and where writeTransform is not the right fit.
+
+### logger
+
+Object of logging functions. Currently only logger.warn and logger.error is used. Useful for surfacing failed/skipped parsing without assuming stdin or stderr should be used.
 
 ### amodro-trace/config
 
+This module helps extract or modify a require.config()/requirejs.config() config inside a JS file. The API methods on this module:
 
+### config.find
 
-### trace options
+Finds the first requirejs/require call to require[js].config/require({}) in a file and returns the value as an object. Will not work with configs that use variable references outside of the config definition. In general, config calls that look more like JSON will work best.
 
-.translate, mention commonjs.convert. translate may run on non-js files.
+```javascript
+var config = require('amodro-config').find(contents);
+```
 
-.findNestedDependencies
+Aruguments to `find`:
 
+* **contents**: String. File contents that might contain a config call.
 
-.stubModules ?
+Returns an Object with the config. Could be `undefined` if a config is not found.
+
+### config.modify
+
+Modify the contents of a require.config/requirejs.config call and places the modifications bac in the contents. This call will LOSE any existing comments that are in the config string.
+
+```javascript
+var config = require('amodro-config')
+.modify(contents, function onConfig(currentConfig) {
+  // This example just modifies the baseUrl.
+  currentConfig.baseUrl = 'new/base';
+  return currentConfig;
+});
+```
+
+Arguments to `modify`:
+
+* **contents**: String. File conents that may contain a config call.
+* **onConfig**: Function. Function called when the first config call is found. It will be passed an Object which is the current config, and the onConfig function should return an Object to use as the new config that will be serialized into the contents, replacing the old config.
+
+Returns a String the contents with the config changes applied.
 
 ## Read transforms
 

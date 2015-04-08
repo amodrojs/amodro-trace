@@ -4,9 +4,9 @@
  */
 'use strict';
 
-var parse = require('./parse');
+var parse = require('../parse');
 
-module.exports = function cjsTranslate(fileName, fileContents) {
+module.exports = function cjs(fileName, fileContents) {
   // Strip out comments.
   try {
     var preamble = '',

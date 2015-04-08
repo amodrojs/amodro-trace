@@ -1,8 +1,8 @@
 /*global describe, it */
 'use strict';
 
-var allTransforms = require('../transforms/all'),
-    cjsTranslate = require('../cjsTranslate'),
+var allWriteTransforms = require('../write/all'),
+    readCjs = require('../read/cjs'),
     fs = require('fs'),
     parse = require('../parse'),
     path = require('path'),
@@ -82,7 +82,7 @@ describe('trace', function() {
     var config = parse.findConfig(readFile(configPath)).config;
     var options = {
       id: 'app',
-      contentTransform: allTransforms({
+      writeTransform: allWriteTransforms({
         stubModules: ['text'],
         logger: {
           warn: function(msg) {
@@ -99,8 +99,8 @@ describe('trace', function() {
   it('cjs', function(done) {
     runTrace(done, 'cjs', {
       id: 'lib',
-      translate: function(id, url, contents) {
-        var result = cjsTranslate(url, contents);
+      readTransform: function(id, url, contents) {
+        var result = readCjs(url, contents);
         return result;
       }
     });

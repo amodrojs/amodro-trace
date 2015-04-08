@@ -1,0 +1,32 @@
+[
+    {
+      "id": "alter",
+      "path": "source/trace/app-lib-split/lib/alter.js",
+      "contents": "define('alter',['require'],function(require) {\n  'use strict';\n  return function alter(text) {\n    text = text.replace(/<h1>([^<]+)<\\/h1>/, '<h1>Altered $1</h1>');\n    console.log(text);\n    return text;\n  };\n});\n"
+    },
+    {
+      "id": "app/helpers/clean",
+      "path": "source/trace/app-lib-split/app/helpers/clean.js",
+      "contents": "define('app/helpers/clean',['require','alter'],function(require) {\n  'use strict';\n  return require('alter');\n});\n"
+    },
+    {
+      "id": "text",
+      "path": "source/trace/app-lib-split/lib/text.js",
+      "contents": "define('text',{load: function(id){throw new Error(\"Dynamic load not allowed: \" + id);}});"
+    },
+    {
+      "id": "text!app/templates/list.html",
+      "path": "source/trace/app-lib-split/app/templates/list.html",
+      "contents": "define('text!app/templates/list.html',[],function () { return '<h1>Title</h1>\\n<ol>\\n<li>Item 1</li>\\n<li>Item 2</li>\\n</ol>\\n';});\n"
+    },
+    {
+      "id": "app/main",
+      "path": "source/trace/app-lib-split/app/main.js",
+      "contents": "/*global document */\ndefine('app/main',['require','./helpers/clean','text!./templates/list.html'],function(require) {\n  'use strict';\n  var clean = require('./helpers/clean'),\n      text = require('text!./templates/list.html');\n\n  document.body.innerHTML = clean(text);\n});\n"
+    },
+    {
+      "id": "app",
+      "path": "source/trace/app-lib-split/app.js",
+      "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n"
+    }
+  ]

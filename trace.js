@@ -7,20 +7,21 @@ var Prom = require('./lib/prom'),
  * Returns the set of nested dependencies for a given module ID in the options.
  * @param  {Object} options the set of options for trace. Possible options:
  * - id: String. the module ID to trace.
- * - translate: Function. A function that is used to translate the contents
- *   of the modules before they are parsed for module APIs. The function will
- *   receive these arguments: function(moduleName, url, contents), and should
- *   synchronously return a string that will be used as the contents.
+ * - readTransform: Function. A function that is used to transform the contents
+ *   of the modules after the contents are read but before they are parsed for
+ *   module APIs. The function will receive these arguments:
+ *   function(moduleName, url, contents), and should synchronously return a
+ *   string that will be used as the contents.
  * - includeContents: Boolean. Set to true if the contents of the modules should
  *   be included in the output. The contents will be the contents after the
- *   translate function has run, if it is provided.
- * - contentTransform: Function. When contents are added to the result, run
- *   this function to allow transforming the contents. See the transforms/
+ *   readTransform function has run, if it is provided.
+ * - writeTransform: Function. When contents are added to the result, run
+ *   this function to allow transforming the contents. See the write/
  *   directory for example transforms. Setting this option automatically sets
  *   includeContents to be true.
  * - keepLoader: Boolean. Keep the loader instance and pass it in the return
  *   value. This is useful if transforms that depend on the instance's context
- *   will be used to transform the contents, and where contentTransform is not
+ *   will be used to transform the contents, and where writeTransform is not
  *   the right fit.
  * - logger: Object of logging functions. Currently only logger.warn and
  *   logger.error is used. Useful for surfacing errors without assuming that
@@ -36,6 +37,10 @@ module.exports = function trace(options, loaderConfig) {
       reject(new Error('options must include "id" ' +
                        'to know what module ID to trace'));
       return;
+    }
+
+    if (options.writeTransform) {
+      options.includeContents = true;
     }
 
     var loader = new Loader(options);
@@ -100,19 +105,20 @@ module.exports = function trace(options, loaderConfig) {
           item.path = filePath;
         }
 
-        if ((options.includeContents || options.contentTransform) && filePath) {
-          var contents = context._tracedTranslatedContents[filePath];
+        if (options.includeContents && filePath) {
+          var contents = context._readTransformedContents[filePath];
           if (!contents && exists(filePath)) {
             contents = context.cacheRead(filePath) || '';
-            if (options.translate) {
-              contents = options.translate(id, filePath, contents);
+            if (options.writeTransform) {
+              contents = options
+                         .writeTransform(context, id, filePath, contents);
             }
           }
-          if (contents && options.contentTransform) {
-            contents = options.contentTransform(context,
-                                                id,
-                                                filePath,
-                                                contents);
+          if (contents && options.writeTransform) {
+            contents = options.writeTransform(context,
+                                              id,
+                                              filePath,
+                                              contents);
           }
 
           item.contents = contents;

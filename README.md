@@ -60,7 +60,7 @@ The call is similar to the simple dependency tree result, but ask amodro-trace t
 
 ```javascript
 var amodroTrace = require('amodro-trace'),
-    allWriteTransforms = require("amodro-trace/write/all'),
+    allWriteTransforms = require('amodro-trace/write/all'),
     path = require('path');
 
 // Create the writeTransform function by passing options to be used by the
@@ -175,9 +175,44 @@ amodroTrace(
 });
 ```
 
-### Consuming CJS modules
+### Transform some files to AMD before tracing
 
+If you are using a transpiled language, or want to author in CommonJS (CJS) format but output to AMD, you can provide a read transform that can modify the contents of files after they are read but before they are traced.
 
+Here is an example that uses the cjs read transform provided in this project (it just wraps CJS modules in AMD wrappers, it does not change module ID tracing rules):
+
+```javascript
+var amodroTrace = require('amodro-trace'),
+    cjsTransform = require('amodro-trace/read/cjs'),
+    path = require('path');
+
+amodroTrace(
+  // The options for trace
+  {
+    // The root directory, usually the root of the web project, and what the
+    // AMD baseUrl is relative to. Should be an absolute path.
+    rootDir: path.join(__dirname, 'www'),
+
+    // The module ID to trace.
+    id: 'app',
+
+    readTransform: function(id, url, contents) {
+      return cjsTransform(url, contents);
+    }
+  },
+  // The loader config to use.
+  {
+    baseUrl: 'lib',
+    paths: {
+      app: '../app'
+    }
+  }
+).then(function(traceResult) {
+  // See other examples for traceResult structure.
+}).catch(function(error) {
+  console.error(error);
+});
+```
 
 ## Install
 

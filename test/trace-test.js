@@ -67,8 +67,14 @@ function runTrace(done, name, options, config, matchId) {
     // console.log('TRACE RESULT: ' + name + ':\n' +
     //             JSON.stringify(result, null, '  '));
 
-    assertMatch(matchId || name, result.traced);
-    done();
+    if (result.warnings) {
+      done(result.warnings);
+    } else if (result.errors) {
+      done(result.errors);
+    } else {
+      assertMatch(matchId || name, result.traced);
+      done();
+    }
   }).catch(function(err) {
     done(err);
   });
@@ -92,12 +98,7 @@ describe('trace', function() {
     var options = {
       id: 'app',
       writeTransform: allWriteTransforms({
-        stubModules: ['text'],
-        logger: {
-          warn: function(msg) {
-            console.warn(msg);
-          }
-        }
+        stubModules: ['text']
       })
     };
 

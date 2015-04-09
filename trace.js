@@ -47,9 +47,6 @@ var Prom = require('./lib/prom'),
  *   value. This is useful if transforms that depend on the instance's context
  *   will be used to transform the contents, and where writeTransform is not
  *   the right fit.
- * - logger: Object of logging functions. Currently only logger.warn and
- *   logger.error is used. Useful for surfacing errors without assuming stdin or
- *   stderr should be used.
  * @param  {Object} loaderConfig the requirejs loader config to use for tracing
  * and finding modules.
  * @return {Object} The trace result.
@@ -66,6 +63,18 @@ module.exports = function trace(options, loaderConfig) {
     if (options.writeTransform) {
       options.includeContents = true;
     }
+
+    var logger = {
+      warnings: [],
+      errors: [],
+      warn: function(msg) {
+        logger.warnings.push(msg);
+      },
+      error: function(msg) {
+        logger.errors.push(msg);
+      }
+    };
+    options.logger = logger;
 
     var loader = new Loader(options);
 
@@ -164,6 +173,17 @@ module.exports = function trace(options, loaderConfig) {
       if (loader) {
         resolved.loader = loader;
       }
+
+      // Return logger warnings and errors
+      if (logger.warnings.length) {
+        resolved.warnings = logger.warnings;
+      }
+      if (logger.errors.length) {
+        resolved.errors = logger.errors;
+      }
+      // Remove logger as it was added above. longer term, clone the object
+      // to avoid this.
+      delete options.logger;
 
       resolve(resolved);
     }

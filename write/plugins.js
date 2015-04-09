@@ -8,9 +8,6 @@ var lang = require('../lib/lang'),
  * for their resource IDs, so the contents could still end up as an empty
  * string.
  * @param  {Object} options object for holding options. Supported options:
- * - logger: Object of logging functions. Currently only logger.warn is used
- * if a module output for a resource ID cannot be properly normalized for
- * string transport.
  * @return {Function} A function that can be used for multiple content transform
  * calls.
  */

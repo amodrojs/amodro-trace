@@ -47,7 +47,15 @@ amodroTrace(
       { "id": "a", "path": "/full/path/to/www/lib/a.js" },
       { "id": "app/main", "path": "/full/path/to/www/app/main.js" }
       { "id": "app", "path": "/full/path/to/www/app.js" }
-    ]
+    ],
+
+    // If parsing triggered warnings or errors, they will show here, as an array
+    // of strings. These are treated as non-fatal, in that the file with the
+    // issue is skipped (may just be invalid JS not meant to be fully traced),
+    // but for best results it is best to investigate the messages that show
+    // up here.
+    warnings: [],
+    errors: []
   };
 }).catch(function(error) {
   console.error(error);
@@ -111,7 +119,15 @@ amodroTrace(
         "path": "/full/path/to/www/app.js",
         "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n"
       }
-    ]
+    ],
+
+    // If parsing triggered warnings or errors, they will show here, as an array
+    // of strings. These are treated as non-fatal, in that the file with the
+    // issue is skipped (may just be invalid JS not meant to be fully traced),
+    // but for best results it is best to investigate the messages that show
+    // up here.
+    warnings: [],
+    errors: []
   };
 }).catch(function(error) {
   console.error(error);
@@ -150,7 +166,8 @@ amodroTrace(
     // You can ovrride the file existence checks by passing in a function for
     // fileExists. defaultExistst is the default exists function used by this
     // project's internals. A synchronous boolean result is expected to be
-    // returned from this function.
+    // returned from this function. It should only return true for files, and
+    // not directories.
     fileExists: function(defaultExists, id, filePath) {
       return fileMap.hasOwnProperty(id);
     },
@@ -256,7 +273,15 @@ Returns a Promise. The resolved value will be a result object that looks like th
       "path": "/full/path/to/www/app.js",
       "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n"
     }
-  ]
+  ],
+
+  // If parsing triggered warnings or errors, they will show here, as an array
+  // of strings. These are treated as non-fatal, in that the file with the
+  // issue is skipped (may just be invalid JS not meant to be fully traced),
+  // but for best results it is best to investigate the messages that show
+  // up here.
+  warnings: [],
+  errors: []
 }
 ```
 
@@ -366,10 +391,6 @@ amodroTrace({}, {}).then(function(traceResult) {
 
 ```
 
-#### logger
-
-Object of logging functions. Currently only logger.warn and logger.error is used. Useful for surfacing failed/skipped parsing without assuming stdin or stderr should be used. See the writeTransform [logger](#logger) docs for more information.
-
 ### amodro-trace/config
 
 This module helps extract or modify a require.config()/requirejs.config() config inside a JS file. The API methods on this module:
@@ -430,44 +451,6 @@ They are listed in the order they are suggested to be applied. There is an `amod
 
 All of these write transform modules export a function that can be called with an options object to generate the final function that should be passed to `writeTransform`. This allows one time options setup that applies to all scripts that are transformed to just happen once. This pattern is suggested in general for write transforms.
 
-### Common write transform options
-
-#### logger
-
-All of the plugins support a `logger` option, which should be an object with a warn and error functions:
-
-```javascript
-{
-  logger: {
-    warn: function(message) {
-
-    },
-    error: function(message) {
-
-    }
-  }
-}
-```
-
-Some internal amodro-trace modules may call `logger.warn` or `logger.error` for parse errors. These are considered non-fatal, in that amodro-trace will just skip further processing of those contents and return the default value for those contents.
-
-However, for debugging and figuring out why some module processing was skipped, the logger object can collect that data. This allows maximum reporting flexibility, and avoids assuming stdin or stderr are OK to use.
-
-### plugins
-
-The `plugins` transform will ask any AMD loader plugin that was loaded during the trace for a version of the resource that works as a JS string concatenated with other JS modules.
-
-It does not have any specific options for the creation of the transform, just supports the general [logger](#logger) option.
-
-```javascript
-var plugins = require('amodro-trace/write/plugins');
-var pluginTransform = plugins({});
-
-require('amodro-trace')({
-  writeTransform: pluginTransform
-});
-```
-
 ### stubs
 
 The `stubs` transform will replace a given set of module IDs with stub `define()` calls instead of the original contents of the modules. This is useful for modules that are not needed in full after a build and just need to be registered as being satisfied dependencies.
@@ -507,11 +490,11 @@ require('amodro-trace')({
 
 The `packages` transform will write out an adapter `define()` for a [packages config](http://requirejs.org/docs/api.html#packages) main module value so that package config is not needed to map 'packageName' to 'packageName/mainModuleId'.
 
-It does not have any transform-specific options, it just supports the general [logger](#logger) option.
+It does not have any transform-specific options.
 
 ```javascript
 var packages = require('amodro-trace/write/packages');
-var packagesTransform = packages({});
+var packagesTransform = packages();
 
 require('amodro-trace')({
   writeTransform: packagesTransform

@@ -17,9 +17,6 @@ var lang = require('../lib/lang'),
  * other variables at the top level. However, wrapping can be useful for shimmed
  * IDs that have dependencies, and where those dependencies may not be
  * immediately available or inlined with this shimmed script.
- * - logger: Object of logging functions. Currently only logger.warn is used
- * if a module output for an ID cannot be properly normalized for string
- * transport.
  * @return {Function} A function that can be used for multiple content transform
  * calls.
  */
@@ -91,6 +88,11 @@ function defines(options) {
  */
 defines.toTransport = function(context, moduleName,
                                filePath, contents, options) {
+  options = options || {};
+  if (!options.logger) {
+    options.logger = context.config._options.logger;
+  }
+
   function onFound(info) {
     //Only mark this module as having a name if not a named module,
     //or if a named module and the name matches expectations.

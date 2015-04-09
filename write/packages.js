@@ -8,9 +8,6 @@ var defines = require('./defines'),
  * adapter define() entries for the package manin value, so that package config
  * is not needed to map 'packageName' to 'packageName/mainModuleId'.
  * @param  {Object} options object for holding options. Supported options:
- * - logger: Object of logging functions. Currently only logger.warn is used
- * if a module output for an ID cannot be properly normalized for string
- * transport.
  * @return {Function} A function that can be used for multiple content transform
  * calls.
  */

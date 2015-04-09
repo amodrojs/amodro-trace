@@ -275,13 +275,8 @@ Returns a Promise. The resolved value will be a result object that looks like th
     }
   ],
 
-  // If parsing triggered warnings or errors, they will show here, as an array
-  // of strings. These are treated as non-fatal, in that the file with the
-  // issue is skipped (may just be invalid JS not meant to be fully traced),
-  // but for best results it is best to investigate the messages that show
-  // up here.
-  warnings: [],
-  errors: []
+  "warnings": [],
+  "errors": []
 }
 ```
 
@@ -290,6 +285,8 @@ The `contents` property for an entry is only included if the [includeContents](#
 The `traced` results are order by least dependent to more dependent. So, modules with no dependencies come first.
 
 `loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-config](#amodro-traceconfig) can help with that.
+
+If parsing triggered warnings or errors, they will show in the `warnings` or `errors` arrays respectively, as an array of strings. These are treated as non-fatal, in that the file with the issue is skipped (may just be invalid JS not meant to be fully traced), but for best results it is best to investigate the messages that show up here. If there are no warnings or errors, those properties will not show up in the trace result.
 
 ### options
 

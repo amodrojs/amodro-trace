@@ -1,5 +1,7 @@
 # amodro-trace
 
+![amodro-trace](https://raw.githubusercontent.com/amodrojs/amodro-design/master/traceLogo-200.png)
+
 [AMD](https://github.com/amdjs/amdjs-api) module tracing for build processes.
 
 Like the [requirejs optimizer](http://requirejs.org/docs/optimization.html), but just traces a module ID for its nested dependencies, and the result is a data structure for that trace, instead of a fully optimized build.
@@ -233,7 +235,7 @@ Returns a Promise. The resolved value will be a result object that looks like th
 
 ```json
 {
-  traced: [
+  "traced": [
     {
       "id": "b",
       "path": "/full/path/to/www/lib/b.js",
@@ -332,7 +334,7 @@ Where `context` is a loader context object created by the internal loader object
 
 The function should synchronously return the value that should be used as the new value for `contents`. If the writeTransform does not want to alter the contents then it should just return the `contents` value passed in to it.
 
-### keepLoader
+#### keepLoader
 
 Boolean. Keep the loader instance and pass it in the return value. This is useful if transforms that depend on the instance's context will be used to transform the contents, and where `writeTransform` is not the right fit. For most uses though, `writeTransform` should be preferred over manually using the loader instance.
 
@@ -364,9 +366,9 @@ amodroTrace({}, {}).then(function(traceResult) {
 
 ```
 
-### logger
+#### logger
 
-Object of logging functions. Currently only logger.warn and logger.error is used. Useful for surfacing failed/skipped parsing without assuming stdin or stderr should be used.
+Object of logging functions. Currently only logger.warn and logger.error is used. Useful for surfacing failed/skipped parsing without assuming stdin or stderr should be used. See the writeTransform [logger](#logger) docs for more information.
 
 ### amodro-trace/config
 
@@ -503,10 +505,9 @@ require('amodro-trace')({
 
 ### packages
 
-The `packages` transform will write out an adapter `define()` for a [packages config]() main module value so that package config is not needed to map 'packageName' to 'packageName/mainModuleId'.
+The `packages` transform will write out an adapter `define()` for a [packages config](http://requirejs.org/docs/api.html#packages) main module value so that package config is not needed to map 'packageName' to 'packageName/mainModuleId'.
 
 It does not have any transform-specific options, it just supports the general [logger](#logger) option.
-
 
 ```javascript
 var packages = require('amodro-trace/write/packages');

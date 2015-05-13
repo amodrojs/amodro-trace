@@ -11,6 +11,8 @@ var allWriteTransforms = require('../write/all'),
     trace = require('../trace'),
 
     backSlashRegExp = /\\/g,
+    crlfRegExp = /\r\n/g,
+    crlfRegExpV2 = /\\r\\n/g,
     dir = __dirname,
     baseDir = path.join(dir, 'source', 'trace');
 
@@ -32,13 +34,19 @@ function assertMatch(id, traced) {
   // Clean traced to match across platform/file systems
   traced.forEach(function(entry) {
     if (entry.path && entry.path.indexOf('!') === -1) {
-      entry.path = entry.path
-             // Remove file system specific prefix.
-             .replace(dir, '')
-             // Remove starting path separator.
-             .substring(1)
-             // Normalize for *nix front slashes.
-             .replace(backSlashRegExp, '/');
+      entry.path =
+              // Remove file system specific prefix.
+              path.relative(dir, entry.path)
+              // Normalize for *nix front slashes.
+              .replace(backSlashRegExp, '/');
+    }
+
+    if (entry.contents) {
+      entry.contents = entry.contents
+              // Reset to expected format for \r\n
+              .replace(crlfRegExp, '\n')
+              // Reset to expected format for \\r\\n
+              .replace(crlfRegExpV2, '\\n');
     }
   });
 

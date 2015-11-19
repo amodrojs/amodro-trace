@@ -1,17 +1,23 @@
 [
-  {
-    "id": "b",
-    "path": "source/trace/file-read/b.js",
-    "contents": "define({\n  name: 'b'\n});\n"
-  },
-  {
-    "id": "a",
-    "path": "source/trace/file-read/a.js",
-    "contents": "define(['b'], function(b) { return { name: 'a', b: b }; });"
-  },
-  {
-    "id": "main",
-    "path": "source/trace/file-read/main.js",
-    "contents": "require(['a'], function(a) {});"
-  }
+    {
+      "id": "b",
+      "path": "source/trace/file-read/b.js",
+      "contents": "define({\n  name: 'b'\n});\n"
+    },
+    {
+      "id": "a",
+      "path": "source/trace/file-read/a.js",
+      "contents": "define(['b'], function(b) { return { name: 'a', b: b }; });",
+      "deps": [
+        "b"
+      ]
+    },
+    {
+      "id": "main",
+      "path": "source/trace/file-read/main.js",
+      "contents": "require(['a'], function(a) {});",
+      "deps": [
+        "a"
+      ]
+    }
 ]

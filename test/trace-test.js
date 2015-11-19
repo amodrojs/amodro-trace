@@ -93,6 +93,7 @@ function runTrace(done, name, options, config, matchId) {
 // ****************************************************
 
 describe('trace', function() {
+
   it('app-lib-split', function(done) {
     var configPath = path.join(baseDir, 'app-lib-split', 'app.js');
     var config = amodroConfig.find(readFile(configPath));
@@ -122,6 +123,10 @@ describe('trace', function() {
         return result;
       }
     });
+  });
+
+  it('combined', function(done) {
+    runTrace(done, 'combined', { id: 'main' });
   });
 
   it('file-read', function(done) {
@@ -174,7 +179,6 @@ describe('trace', function() {
       }
     });
   });
-
 
   it('simple', function(done) {
     runTrace(done, 'simple', { id: 'main' });

@@ -5,7 +5,10 @@
   },
   {
     "id": "app/helpers/clean",
-    "path": "source/trace/app-lib-split/app/helpers/clean.js"
+    "path": "source/trace/app-lib-split/app/helpers/clean.js",
+    "deps": [
+      "alter"
+    ]
   },
   {
     "id": "text",
@@ -17,10 +20,17 @@
   },
   {
     "id": "app/main",
-    "path": "source/trace/app-lib-split/app/main.js"
+    "path": "source/trace/app-lib-split/app/main.js",
+    "deps": [
+      "app/helpers/clean",
+      "text!app/templates/list.html"
+    ]
   },
   {
     "id": "app",
-    "path": "source/trace/app-lib-split/app.js"
+    "path": "source/trace/app-lib-split/app.js",
+    "deps": [
+      "app/main"
+    ]
   }
 ]

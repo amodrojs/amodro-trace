@@ -1,0 +1,38 @@
+[
+    {
+      "id": "view1",
+      "path": "source/trace/combined/view1.js",
+      "deps": [
+        "header",
+        "content",
+        "footer"
+      ],
+      "otherIds": {
+        "inlay": {},
+        "button": {},
+        "header": {
+          "deps": [
+            "button"
+          ]
+        },
+        "content": {
+          "deps": [
+            "inlay",
+            "button"
+          ]
+        },
+        "footer": {
+          "deps": [
+            "button"
+          ]
+        }
+      }
+    },
+    {
+      "id": "main",
+      "path": "source/trace/combined/main.js",
+      "deps": [
+        "view1"
+      ]
+    }
+]

@@ -1,21 +1,32 @@
 [
-  {
-    "id": "util",
-    "path": "source/trace/plugin/util.js"
-  },
-  {
-    "id": "converter",
-    "path": "source/trace/plugin/converter.js"
-  },
-  {
-    "id": "plug",
-    "path": "source/trace/plugin/plug.js"
-  },
-  {
-    "id": "plug!shouldbeuppercasetext"
-  },
-  {
-    "id": "main",
-    "path": "source/trace/plugin/main.js"
-  }
+    {
+      "id": "util",
+      "path": "source/trace/plugin/util.js"
+    },
+    {
+      "id": "converter",
+      "path": "source/trace/plugin/converter.js",
+      "deps": [
+        "util"
+      ]
+    },
+    {
+      "id": "plug",
+      "path": "source/trace/plugin/plug.js",
+      "deps": [
+        "converter"
+      ]
+    },
+    {
+      "id": "plug!shouldbeuppercasetext"
+    },
+    {
+      "id": "main",
+      "path": "source/trace/plugin/main.js",
+      "deps": [
+        "plug",
+        "converter",
+        "plug!shouldbeuppercasetext"
+      ]
+    }
 ]

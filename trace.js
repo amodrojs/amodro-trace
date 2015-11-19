@@ -1,6 +1,11 @@
 'use strict';
 var Prom = require('./lib/prom'),
-    Loader = require('./lib/loader/Loader');
+    Loader = require('./lib/loader/Loader'),
+    specialDepIds = {
+      require: true,
+      exports: true,
+      module: true
+    };
 
 /**
  * Returns the set of nested dependencies for a given module ID in the options.
@@ -155,6 +160,44 @@ module.exports = function trace(options, loaderConfig) {
           }
 
           item.contents = contents;
+        }
+
+        if (filePath) {
+          var inlinedIds = context.urlToDefines[filePath];
+          if (inlinedIds) {
+            var otherIds;
+            inlinedIds.forEach(function(inlinedId) {
+              var deps = context.depsForId[inlinedId];
+
+              // Do not include the special dependency IDs, they do not help
+              // in tracing inter-module dependencies, they are meta ones that
+              // are always available.
+              if (deps) {
+                deps = deps.filter(function(dep) {
+                  return !specialDepIds.hasOwnProperty(dep);
+                });
+              }
+
+              if (inlinedId === id) {
+                // Matches main ID for the file, just add to root of the item.
+                if (deps && deps.length) {
+                  item.deps = deps;
+                }
+              } else {
+                // Another ID in the file, add it to "otherIds".
+                if (!otherIds) {
+                  otherIds = {};
+                }
+                var idProps = otherIds[inlinedId] = {};
+                if (deps && deps.length) {
+                  idProps.deps = deps;
+                }
+              }
+            });
+            if (otherIds) {
+              item.otherIds = otherIds;
+            }
+          }
         }
 
         return item;

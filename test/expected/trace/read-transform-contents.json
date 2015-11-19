@@ -7,6 +7,9 @@
   {
     "id": "main",
     "path": "source/trace/read-transform-contents/main.js",
-    "contents": "\nrequire(['a'], function(a) {\n  console.log('a');\n});\n\n"
+    "contents": "\nrequire(['a'], function(a) {\n  console.log('a');\n});\n\n",
+    "deps": [
+      "a"
+    ]
   }
 ]

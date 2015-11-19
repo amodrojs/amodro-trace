@@ -1,5 +1,20 @@
 [
-  { "id": "b", "path": "source/trace/simple/b.js" },
-  { "id": "a", "path": "source/trace/simple/a.js" },
-  { "id": "main", "path": "source/trace/simple/main.js" }
+    {
+      "id": "b",
+      "path": "source/trace/simple/b.js"
+    },
+    {
+      "id": "a",
+      "path": "source/trace/simple/a.js",
+      "deps": [
+        "b"
+      ]
+    },
+    {
+      "id": "main",
+      "path": "source/trace/simple/main.js",
+      "deps": [
+        "a"
+      ]
+    }
 ]

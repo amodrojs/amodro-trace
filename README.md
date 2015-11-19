@@ -44,9 +44,9 @@ amodroTrace(
   traceResult = {
     traced: [
       { "id": "b", "path": "/full/path/to/www/lib/b.js" },
-      { "id": "a", "path": "/full/path/to/www/lib/a.js" },
-      { "id": "app/main", "path": "/full/path/to/www/app/main.js" }
-      { "id": "app", "path": "/full/path/to/www/app.js" }
+      { "id": "a", "path": "/full/path/to/www/lib/a.js", "deps": ["b"]  },
+      { "id": "app/main", "path": "/full/path/to/www/app/main.js", "deps": ["a"]  }
+      { "id": "app", "path": "/full/path/to/www/app.js", "deps": ["app/main"]  }
     ],
 
     // If parsing triggered warnings or errors, they will show here, as an array
@@ -107,17 +107,26 @@ amodroTrace(
       {
         "id": "a",
         "path": "/full/path/to/www/lib/a.js",
-        "contents": "define('a',['b'], function(b) { return { name: 'a', b: b }; });"
+        "contents": "define('a',['b'], function(b) { return { name: 'a', b: b }; });",
+        "deps": [
+          "b"
+        ]
       },
       {
         "id": "app/main",
         "path": "/full/path/to/www/app/main.js",
-        "contents": "define('app/main',['require','a'],{\n  console.log(require('a');\n});\n"
+        "contents": "define('app/main',['require','a'],{\n  console.log(require('a');\n});\n",
+        "deps": [
+          "a"
+        ]
       },
       {
         "id": "app",
         "path": "/full/path/to/www/app.js",
-        "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n"
+        "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n",
+        "deps": [
+          "app/main"
+        ]
       }
     ],
 
@@ -261,17 +270,26 @@ Returns a Promise. The resolved value will be a result object that looks like th
     {
       "id": "a",
       "path": "/full/path/to/www/lib/a.js",
-      "contents": "define('a',['b'], function(b) { return { name: 'a', b: b }; });"
+      "contents": "define('a',['b'], function(b) { return { name: 'a', b: b }; });",
+      "deps": [
+        "b"
+      ]
     },
     {
       "id": "app/main",
       "path": "/full/path/to/www/app/main.js",
-      "contents": "define('app/main',['require','a'],{\n  console.log(require('a');\n});\n"
+      "contents": "define('app/main',['require','a'],{\n  console.log(require('a');\n});\n",
+      "deps": [
+        "a"
+      ]
     },
     {
       "id": "app",
       "path": "/full/path/to/www/app.js",
-      "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n"
+      "contents": "require.config({\n  baseUrl: 'lib',\n  paths: {\n    app: '../app'\n  }\n});\n\nrequire(['app/main']);\n\ndefine(\"app\", [],function(){});\n",
+      "deps": [
+        "app/main"
+      ]
     }
   ],
 
@@ -283,6 +301,56 @@ Returns a Promise. The resolved value will be a result object that looks like th
 The `contents` property for an entry is only included if the [includeContents](#includecontents) or [writeTransform](#writetransform) options are used. If [keepLoader](#keeploader) option is used, the result object will include a `loader` property.
 
 The `traced` results are order by least dependent to more dependent. So, modules with no dependencies come first.
+
+Each module entry also includes the normalized IDs for the dependencies in the `deps` property. If no dependencies, the `deps` property is not there. For files that have multiple named `define()`'d modules, their IDs with their dependencies will be listed with the `otherIds` property. Only top level define()s in the file are found, nested ones inside a UMD wrapper should not be traced.
+
+Example result where "view1" was a built file containining a few other modules:
+
+```json
+{
+  "traced": [
+    {
+      "id": "view1",
+      "path": "/full/path/to/view1.js",
+      "deps": [
+        "header",
+        "content",
+        "footer"
+      ],
+      "otherIds": {
+        "inlay": {},
+        "button": {},
+        "header": {
+          "deps": [
+            "button"
+          ]
+        },
+        "content": {
+          "deps": [
+            "inlay",
+            "button"
+          ]
+        },
+        "footer": {
+          "deps": [
+            "button"
+          ]
+        }
+      }
+    },
+    {
+      "id": "main",
+      "path": "/full/path/to/main.js",
+      "deps": [
+        "view1"
+      ]
+    }
+  ],
+
+  "warnings": [],
+  "errors": []
+}
+```
 
 `loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-config](#amodro-traceconfig) can help with that.
 

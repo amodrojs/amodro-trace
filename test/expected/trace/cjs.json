@@ -1,30 +1,44 @@
 [
-  {
-    "id": "template",
-    "path": "source/trace/cjs/template.js"
-  },
-  {
-    "id": "model",
-    "path": "source/trace/cjs/model.js"
-  },
-  {
-    "id": "controller",
-    "path": "source/trace/cjs/controller.js"
-  },
-  {
-    "id": "util/helper",
-    "path": "source/trace/cjs/util/helper.js"
-  },
-  {
-    "id": "jquery",
-    "path": "source/trace/cjs/jquery.js"
-  },
-  {
-    "id": "view",
-    "path": "source/trace/cjs/view.js"
-  },
-  {
-    "id": "lib",
-    "path": "source/trace/cjs/lib.js"
-  }
+    {
+      "id": "template",
+      "path": "source/trace/cjs/template.js"
+    },
+    {
+      "id": "model",
+      "path": "source/trace/cjs/model.js"
+    },
+    {
+      "id": "controller",
+      "path": "source/trace/cjs/controller.js",
+      "deps": [
+        "model"
+      ]
+    },
+    {
+      "id": "util/helper",
+      "path": "source/trace/cjs/util/helper.js"
+    },
+    {
+      "id": "jquery",
+      "path": "source/trace/cjs/jquery.js"
+    },
+    {
+      "id": "view",
+      "path": "source/trace/cjs/view.js",
+      "deps": [
+        "model",
+        "util/helper",
+        "jquery"
+      ]
+    },
+    {
+      "id": "lib",
+      "path": "source/trace/cjs/lib.js",
+      "deps": [
+        "template",
+        "model",
+        "controller",
+        "view"
+      ]
+    }
 ]

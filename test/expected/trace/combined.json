@@ -8,25 +8,47 @@
         "footer"
       ],
       "otherIds": {
-        "inlay": {},
-        "button": {},
+        "inlay": {
+          "dependents": [
+            "content"
+          ]
+        },
+        "button": {
+          "dependents": [
+            "header",
+            "content",
+            "footer"
+          ]
+        },
         "header": {
           "deps": [
             "button"
+          ],
+          "dependents": [
+            "view1"
           ]
         },
         "content": {
           "deps": [
             "inlay",
             "button"
+          ],
+          "dependents": [
+            "view1"
           ]
         },
         "footer": {
           "deps": [
             "button"
+          ],
+          "dependents": [
+            "view1"
           ]
         }
-      }
+      },
+      "dependents": [
+        "main"
+      ]
     },
     {
       "id": "main",

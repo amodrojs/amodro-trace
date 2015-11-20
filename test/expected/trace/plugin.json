@@ -1,13 +1,20 @@
 [
     {
       "id": "util",
-      "path": "source/trace/plugin/util.js"
+      "path": "source/trace/plugin/util.js",
+      "dependents": [
+        "converter"
+      ]
     },
     {
       "id": "converter",
       "path": "source/trace/plugin/converter.js",
       "deps": [
         "util"
+      ],
+      "dependents": [
+        "plug",
+        "main"
       ]
     },
     {
@@ -15,10 +22,17 @@
       "path": "source/trace/plugin/plug.js",
       "deps": [
         "converter"
+      ],
+      "dependents": [
+        "plug!shouldbeuppercasetext",
+        "main"
       ]
     },
     {
-      "id": "plug!shouldbeuppercasetext"
+      "id": "plug!shouldbeuppercasetext",
+      "dependents": [
+        "main"
+      ]
     },
     {
       "id": "main",

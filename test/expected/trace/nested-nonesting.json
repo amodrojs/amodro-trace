@@ -1,13 +1,19 @@
 [
     {
       "id": "b",
-      "path": "source/trace/nested/b.js"
+      "path": "source/trace/nested/b.js",
+      "dependents": [
+        "a"
+      ]
     },
     {
       "id": "a",
       "path": "source/trace/nested/a.js",
       "deps": [
         "b"
+      ],
+      "dependents": [
+        "top"
       ]
     },
     {
@@ -15,11 +21,17 @@
       "path": "source/trace/nested/top.js",
       "deps": [
         "a"
+      ],
+      "dependents": [
+        "main"
       ]
     },
     {
       "id": "d",
-      "path": "source/trace/nested/d.js"
+      "path": "source/trace/nested/d.js",
+      "dependents": [
+        "main"
+      ]
     },
     {
       "id": "main",
@@ -28,4 +40,5 @@
         "top",
         "d"
       ]
-    }]
+    }
+]

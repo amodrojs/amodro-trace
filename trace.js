@@ -192,12 +192,21 @@ module.exports = function trace(options, loaderConfig) {
                 if (deps && deps.length) {
                   idProps.deps = deps;
                 }
+                var inlinedIdDependents = context.dependentsForId[inlinedId];
+                if (inlinedIdDependents) {
+                  idProps.dependents = inlinedIdDependents;
+                }
               }
             });
             if (otherIds) {
               item.otherIds = otherIds;
             }
           }
+        }
+
+        var dependents = context.dependentsForId[id];
+        if (dependents) {
+          item.dependents = dependents;
         }
 
         return item;
@@ -227,6 +236,9 @@ module.exports = function trace(options, loaderConfig) {
       // Remove logger as it was added above. longer term, clone the object
       // to avoid this.
       delete options.logger;
+
+      // Used for updating tests when structure changes
+      // console.log(JSON.stringify(resolved, null, '  '));
 
       resolve(resolved);
     }

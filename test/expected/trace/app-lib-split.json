@@ -1,36 +1,51 @@
 [
-  {
-    "id": "alter",
-    "path": "source/trace/app-lib-split/lib/alter.js"
-  },
-  {
-    "id": "app/helpers/clean",
-    "path": "source/trace/app-lib-split/app/helpers/clean.js",
-    "deps": [
-      "alter"
-    ]
-  },
-  {
-    "id": "text",
-    "path": "source/trace/app-lib-split/lib/text.js"
-  },
-  {
-    "id": "text!app/templates/list.html",
-    "path": "source/trace/app-lib-split/app/templates/list.html"
-  },
-  {
-    "id": "app/main",
-    "path": "source/trace/app-lib-split/app/main.js",
-    "deps": [
-      "app/helpers/clean",
-      "text!app/templates/list.html"
-    ]
-  },
-  {
-    "id": "app",
-    "path": "source/trace/app-lib-split/app.js",
-    "deps": [
-      "app/main"
-    ]
-  }
+    {
+      "id": "alter",
+      "path": "source/trace/app-lib-split/lib/alter.js",
+      "dependents": [
+        "app/helpers/clean"
+      ]
+    },
+    {
+      "id": "app/helpers/clean",
+      "path": "source/trace/app-lib-split/app/helpers/clean.js",
+      "deps": [
+        "alter"
+      ],
+      "dependents": [
+        "app/main"
+      ]
+    },
+    {
+      "id": "text",
+      "path": "source/trace/app-lib-split/lib/text.js",
+      "dependents": [
+        "text!app/templates/list.html"
+      ]
+    },
+    {
+      "id": "text!app/templates/list.html",
+      "path": "source/trace/app-lib-split/app/templates/list.html",
+      "dependents": [
+        "app/main"
+      ]
+    },
+    {
+      "id": "app/main",
+      "path": "source/trace/app-lib-split/app/main.js",
+      "deps": [
+        "app/helpers/clean",
+        "text!app/templates/list.html"
+      ],
+      "dependents": [
+        "app"
+      ]
+    },
+    {
+      "id": "app",
+      "path": "source/trace/app-lib-split/app.js",
+      "deps": [
+        "app/main"
+      ]
+    }
 ]

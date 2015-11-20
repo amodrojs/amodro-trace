@@ -2,7 +2,10 @@
     {
       "id": "alter",
       "path": "source/trace/app-lib-split/lib/alter.js",
-      "contents": "define('alter',['require'],function(require) {\n  'use strict';\n  return function alter(text) {\n    text = text.replace(/<h1>([^<]+)<\\/h1>/, '<h1>Altered $1</h1>');\n    console.log(text);\n    return text;\n  };\n});\n"
+      "contents": "define('alter',['require'],function(require) {\n  'use strict';\n  return function alter(text) {\n    text = text.replace(/<h1>([^<]+)<\\/h1>/, '<h1>Altered $1</h1>');\n    console.log(text);\n    return text;\n  };\n});\n",
+      "dependents": [
+        "app/helpers/clean"
+      ]
     },
     {
       "id": "app/helpers/clean",
@@ -10,17 +13,26 @@
       "contents": "define('app/helpers/clean',['require','alter'],function(require) {\n  'use strict';\n  return require('alter');\n});\n",
       "deps": [
         "alter"
+      ],
+      "dependents": [
+        "app/main"
       ]
     },
     {
       "id": "text",
       "path": "source/trace/app-lib-split/lib/text.js",
-      "contents": "define('text',{load: function(id){throw new Error(\"Dynamic load not allowed: \" + id);}});"
+      "contents": "define('text',{load: function(id){throw new Error(\"Dynamic load not allowed: \" + id);}});",
+      "dependents": [
+        "text!app/templates/list.html"
+      ]
     },
     {
       "id": "text!app/templates/list.html",
       "path": "source/trace/app-lib-split/app/templates/list.html",
-      "contents": "define('text!app/templates/list.html',[],function () { return '<h1>Title</h1>\\n<ol>\\n<li>Item 1</li>\\n<li>Item 2</li>\\n</ol>\\n';});\n"
+      "contents": "define('text!app/templates/list.html',[],function () { return '<h1>Title</h1>\\n<ol>\\n<li>Item 1</li>\\n<li>Item 2</li>\\n</ol>\\n';});\n",
+      "dependents": [
+        "app/main"
+      ]
     },
     {
       "id": "app/main",
@@ -29,6 +41,9 @@
       "deps": [
         "app/helpers/clean",
         "text!app/templates/list.html"
+      ],
+      "dependents": [
+        "app"
       ]
     },
     {

@@ -1,15 +1,18 @@
 [
-  {
-    "id": "a",
-    "path": "source/trace/read-transform-contents/a.js",
-    "contents": "\ndefine({\n  name: 'a'\n});\n"
-  },
-  {
-    "id": "main",
-    "path": "source/trace/read-transform-contents/main.js",
-    "contents": "\nrequire(['a'], function(a) {\n  console.log('a');\n});\n\n",
-    "deps": [
-      "a"
-    ]
-  }
+    {
+      "id": "a",
+      "path": "source/trace/read-transform-contents/a.js",
+      "contents": "\ndefine({\n  name: 'a'\n});\n",
+      "dependents": [
+        "main"
+      ]
+    },
+    {
+      "id": "main",
+      "path": "source/trace/read-transform-contents/main.js",
+      "contents": "\nrequire(['a'], function(a) {\n  console.log('a');\n});\n\n",
+      "deps": [
+        "a"
+      ]
+    }
 ]

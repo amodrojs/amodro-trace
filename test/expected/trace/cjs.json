@@ -1,26 +1,43 @@
 [
     {
       "id": "template",
-      "path": "source/trace/cjs/template.js"
+      "path": "source/trace/cjs/template.js",
+      "dependents": [
+        "lib"
+      ]
     },
     {
       "id": "model",
-      "path": "source/trace/cjs/model.js"
+      "path": "source/trace/cjs/model.js",
+      "dependents": [
+        "controller",
+        "view",
+        "lib"
+      ]
     },
     {
       "id": "controller",
       "path": "source/trace/cjs/controller.js",
       "deps": [
         "model"
+      ],
+      "dependents": [
+        "lib"
       ]
     },
     {
       "id": "util/helper",
-      "path": "source/trace/cjs/util/helper.js"
+      "path": "source/trace/cjs/util/helper.js",
+      "dependents": [
+        "view"
+      ]
     },
     {
       "id": "jquery",
-      "path": "source/trace/cjs/jquery.js"
+      "path": "source/trace/cjs/jquery.js",
+      "dependents": [
+        "view"
+      ]
     },
     {
       "id": "view",
@@ -29,6 +46,9 @@
         "model",
         "util/helper",
         "jquery"
+      ],
+      "dependents": [
+        "lib"
       ]
     },
     {

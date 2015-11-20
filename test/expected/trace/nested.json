@@ -1,11 +1,17 @@
 [
     {
       "id": "b",
-      "path": "source/trace/nested/b.js"
+      "path": "source/trace/nested/b.js",
+      "dependents": [
+        "a"
+      ]
     },
     {
       "id": "e",
-      "path": "source/trace/nested/e.js"
+      "path": "source/trace/nested/e.js",
+      "dependents": [
+        "a"
+      ]
     },
     {
       "id": "a",
@@ -13,11 +19,17 @@
       "deps": [
         "b",
         "e"
+      ],
+      "dependents": [
+        "top"
       ]
     },
     {
       "id": "c",
-      "path": "source/trace/nested/c.js"
+      "path": "source/trace/nested/c.js",
+      "dependents": [
+        "top"
+      ]
     },
     {
       "id": "top",
@@ -25,11 +37,17 @@
       "deps": [
         "a",
         "c"
+      ],
+      "dependents": [
+        "main"
       ]
     },
     {
       "id": "d",
-      "path": "source/trace/nested/d.js"
+      "path": "source/trace/nested/d.js",
+      "dependents": [
+        "main"
+      ]
     },
     {
       "id": "main",
@@ -39,4 +57,5 @@
         "d"
       ]
     }
+
 ]

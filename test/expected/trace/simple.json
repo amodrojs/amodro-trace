@@ -1,13 +1,19 @@
 [
     {
       "id": "b",
-      "path": "source/trace/simple/b.js"
+      "path": "source/trace/simple/b.js",
+      "dependents": [
+        "a"
+      ]
     },
     {
       "id": "a",
       "path": "source/trace/simple/a.js",
       "deps": [
         "b"
+      ],
+      "dependents": [
+        "main"
       ]
     },
     {

@@ -2,7 +2,10 @@
     {
       "id": "b",
       "path": "source/trace/file-read/b.js",
-      "contents": "define({\n  name: 'b'\n});\n"
+      "contents": "define({\n  name: 'b'\n});\n",
+      "dependents": [
+        "a"
+      ]
     },
     {
       "id": "a",
@@ -10,6 +13,9 @@
       "contents": "define(['b'], function(b) { return { name: 'a', b: b }; });",
       "deps": [
         "b"
+      ],
+      "dependents": [
+        "main"
       ]
     },
     {

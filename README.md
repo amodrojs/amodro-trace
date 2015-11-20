@@ -43,9 +43,9 @@ amodroTrace(
   // The traceResult has this structure:
   traceResult = {
     traced: [
-      { "id": "b", "path": "/full/path/to/www/lib/b.js" },
-      { "id": "a", "path": "/full/path/to/www/lib/a.js", "deps": ["b"]  },
-      { "id": "app/main", "path": "/full/path/to/www/app/main.js", "deps": ["a"]  }
+      { "id": "b", "path": "/full/path/to/www/lib/b.js", "dependents": ["a"] },
+      { "id": "a", "path": "/full/path/to/www/lib/a.js", "deps": ["b"], "dependents": ["app/main"] },
+      { "id": "app/main", "path": "/full/path/to/www/app/main.js", "deps": ["a"], "dependents": ["app"] }
       { "id": "app", "path": "/full/path/to/www/app.js", "deps": ["app/main"]  }
     ],
 
@@ -102,7 +102,10 @@ amodroTrace(
       {
         "id": "b",
         "path": "/full/path/to/www/lib/b.js",
-        "contents": "define('b',{\n  name: 'b'\n});\n"
+        "contents": "define('b',{\n  name: 'b'\n});\n",
+        "dependents": [
+          "a"
+        ]
       },
       {
         "id": "a",
@@ -110,6 +113,9 @@ amodroTrace(
         "contents": "define('a',['b'], function(b) { return { name: 'a', b: b }; });",
         "deps": [
           "b"
+        ],
+        "dependents": [
+          "app/main"
         ]
       },
       {
@@ -118,6 +124,9 @@ amodroTrace(
         "contents": "define('app/main',['require','a'],{\n  console.log(require('a');\n});\n",
         "deps": [
           "a"
+        ],
+        "dependents": [
+          "app"
         ]
       },
       {
@@ -265,7 +274,10 @@ Returns a Promise. The resolved value will be a result object that looks like th
     {
       "id": "b",
       "path": "/full/path/to/www/lib/b.js",
-      "contents": "define('b',{\n  name: 'b'\n});\n"
+      "contents": "define('b',{\n  name: 'b'\n});\n",
+      "dependents": [
+        "a"
+      ]
     },
     {
       "id": "a",
@@ -273,6 +285,9 @@ Returns a Promise. The resolved value will be a result object that looks like th
       "contents": "define('a',['b'], function(b) { return { name: 'a', b: b }; });",
       "deps": [
         "b"
+      ],
+      "dependents": [
+        "app/main"
       ]
     },
     {
@@ -281,6 +296,9 @@ Returns a Promise. The resolved value will be a result object that looks like th
       "contents": "define('app/main',['require','a'],{\n  console.log(require('a');\n});\n",
       "deps": [
         "a"
+      ],
+      "dependents": [
+        "app"
       ]
     },
     {
@@ -351,6 +369,8 @@ Example result where "view1" was a built file containining a few other modules:
   "errors": []
 }
 ```
+
+Eache module entry may also include a `dependents` property, which is the set of module IDs that statically specify the module as a dependency. It is only the direct dependents, not the dependents of those dependents.
 
 `loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-config](#amodro-traceconfig) can help with that.
 

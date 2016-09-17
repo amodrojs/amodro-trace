@@ -1,6 +1,6 @@
 {
   "name": "amodro-trace",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "AMD module tracing for build processes.",
   "main": "trace.js",
   "scripts": {

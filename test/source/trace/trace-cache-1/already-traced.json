@@ -1,0 +1,47 @@
+{
+	"traced": [
+	    {
+	      "id": "jquery",
+	      "path": "source/trace/trace-cache-1/js/lib/jquery.js",
+	      "dependents": [
+	        "app/lib",
+	        "app/common"
+	      ]
+	    },
+	    {
+	      "id": "app/lib",
+	      "path": "source/trace/trace-cache-1/js/app/lib.js",
+	      "deps": [
+	        "jquery",
+	        "trace-only"
+	      ],
+	      "dependents": [
+	        "app/common"
+	      ]
+	    },
+	    {
+	      "id": "app/controller/Base",
+	      "path": "source/trace/trace-cache-1/js/app/controller/Base.js",
+	      "dependents": [
+	        "app/common"
+	      ]
+	    },
+	    {
+	      "id": "app/model/Base",
+	      "path": "source/trace/trace-cache-1/js/app/model/Base.js",
+	      "dependents": [
+	        "app/common"
+	      ]
+	    },
+	    {
+	      "id": "app/common",
+	      "path": "source/trace/trace-cache-1/js/app/common.js",
+	      "deps": [
+	        "jquery",
+	        "app/lib",
+	        "app/controller/Base",
+	        "app/model/Base"
+	      ]
+	    }
+	]
+}

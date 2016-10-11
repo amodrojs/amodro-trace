@@ -388,6 +388,14 @@ String. The full path to the root of the project to be scanned. This is usually 
 
 String. the module ID to trace.
 
+#### traced
+
+If there was a previous `traceResult` that should be used as part of this new trace, then pass the `traceResult.traced` as this `traced` property. The items in the `traced` array will be used instead of loading and parsing the file contents in the current `trace()` call.
+
+Notes:
+
+* The `traced` array items should include the `deps` property. Only the `id` and `deps` properties are used from the `traced` array items.
+
 #### findNestedDependencies
 
 Boolean. Defaults to false. Normally `require([])` calls inside a `define()`'d module are not traced, as they are usually meant to be dynamically loaded dependencies and are not static module dependencies.

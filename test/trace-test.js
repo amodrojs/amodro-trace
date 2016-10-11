@@ -184,4 +184,20 @@ describe('trace', function() {
     runTrace(done, 'simple', { id: 'main' });
   });
 
+  it('trace-cache-1', function(done) {
+
+    var traceCachePath = path.join(baseDir, 'trace-cache-1', 'already-traced.json');
+    var traceCache = JSON.parse(readFile(traceCachePath));
+
+    runTrace(done, 'trace-cache-1', {
+      id: 'app/page1',
+      traced: traceCache.traced,
+      findNestedDependencies: true
+    }, {
+      baseUrl: 'js/lib',
+      paths: {
+        app: '../app'
+      }
+    });
+  });
 });

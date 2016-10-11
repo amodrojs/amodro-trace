@@ -1,0 +1,100 @@
+  [
+    {
+      "id": "jquery",
+      "path": "source/trace/trace-cache-1/js/lib/jquery.js",
+      "dependents": [
+        "app/lib",
+        "app/common",
+        "app/main1"
+      ]
+    },
+    {
+      "id": "trace-only",
+      "path": "source/trace/trace-cache-1/js/lib/trace-only.js",
+      "dependents": [
+        "app/lib"
+      ]
+    },
+    {
+      "id": "app/lib",
+      "path": "source/trace/trace-cache-1/js/app/lib.js",
+      "deps": [
+        "jquery",
+        "trace-only"
+      ],
+      "dependents": [
+        "app/common",
+        "app/main1"
+      ]
+    },
+    {
+      "id": "app/controller/Base",
+      "path": "source/trace/trace-cache-1/js/app/controller/Base.js",
+      "dependents": [
+        "app/common",
+        "app/controller/c1"
+      ]
+    },
+    {
+      "id": "app/model/Base",
+      "path": "source/trace/trace-cache-1/js/app/model/Base.js",
+      "dependents": [
+        "app/common",
+        "app/model/m1"
+      ]
+    },
+    {
+      "id": "app/common",
+      "path": "source/trace/trace-cache-1/js/app/common.js",
+      "deps": [
+        "jquery",
+        "app/lib",
+        "app/controller/Base",
+        "app/model/Base"
+      ],
+      "dependents": [
+        "app/page1"
+      ]
+    },
+    {
+      "id": "app/controller/c1",
+      "path": "source/trace/trace-cache-1/js/app/controller/c1.js",
+      "deps": [
+        "app/controller/Base"
+      ],
+      "dependents": [
+        "app/main1"
+      ]
+    },
+    {
+      "id": "app/model/m1",
+      "path": "source/trace/trace-cache-1/js/app/model/m1.js",
+      "deps": [
+        "app/model/Base"
+      ],
+      "dependents": [
+        "app/main1"
+      ]
+    },
+    {
+      "id": "app/main1",
+      "path": "source/trace/trace-cache-1/js/app/main1.js",
+      "deps": [
+        "jquery",
+        "app/lib",
+        "app/controller/c1",
+        "app/model/m1"
+      ],
+      "dependents": [
+        "app/page1"
+      ]
+    },
+    {
+      "id": "app/page1",
+      "path": "source/trace/trace-cache-1/js/app/page1.js",
+      "deps": [
+        "app/common",
+        "app/main1"
+      ]
+    }
+  ]

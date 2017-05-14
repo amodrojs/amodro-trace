@@ -1,0 +1,51 @@
+{
+	"traced": [
+	    {
+	      "id": "jquery",
+	      "path": "source/trace/trace-cache-1/js/lib/jquery.js",
+	      "dependents": [
+	        "app/lib",
+	        "app/common"
+	      ]
+	    },
+	    {
+	      "id": "app/lib",
+	      "path": "source/trace/trace-cache-1/js/app/lib.js",
+          "contents": "define(['jquery', 'trace-only'], function ($) {\n    return {\n        getBody: function () {\n            return $('body');\n        }\n    }\n});\n",
+	      "deps": [
+	        "jquery",
+	        "trace-only"
+	      ],
+	      "dependents": [
+	        "app/common"
+	      ]
+	    },
+	    {
+	      "id": "app/controller/Base",
+	      "path": "source/trace/trace-cache-1/js/app/controller/Base.js",
+          "contents": "define(function () {\n    function controllerBase(id) {\n        this.id = id;\n    }\n\n    controllerBase.prototype = {\n        setModel: function (model) {\n            this.model = model;\n        },\n\n        render: function (bodyDom) {\n            bodyDom.prepend('<h1>Controller ' + this.id + ' says \"' +\n                      this.model.getTitle() + '\"</h1>');\n        }\n    };\n\n    return controllerBase;\n});\n",
+	      "dependents": [
+	        "app/common"
+	      ]
+	    },
+	    {
+	      "id": "app/model/Base",
+	      "path": "source/trace/trace-cache-1/js/app/model/Base.js",
+          "contents": "define(function () {\n    function modelBase(title) {\n        this.title = title;\n    }\n\n    modelBase.prototype = {\n        getTitle: function () {\n            return this.title;\n        }\n    };\n\n    return modelBase;\n});\n",
+	      "dependents": [
+	        "app/common"
+	      ]
+	    },
+	    {
+	      "id": "app/common",
+	      "path": "source/trace/trace-cache-1/js/app/common.js",
+          "contents": "define(['jquery', 'app/lib', 'app/controller/Base', 'app/model/Base'],\nfunction() {\n\n});\n",
+	      "deps": [
+	        "jquery",
+	        "app/lib",
+	        "app/controller/Base",
+	        "app/model/Base"
+	      ]
+	    }
+	]
+}

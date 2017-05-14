@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Page 1</title>
+        <script src="js/lib/require.js"></script>
+        <script>
+        requirejs.config({
+        	baseUrl: 'js/lib',
+        	paths: {
+        		app: '../app'
+        	}
+        });
+        require(['app/page1']);
+        </script>d
+    </head>
+    <body>
+        <a href="page2.html">Go to Page 2</a>
+    </body>
+</html>

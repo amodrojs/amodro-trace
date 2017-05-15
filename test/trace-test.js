@@ -184,6 +184,30 @@ describe('trace', function() {
     runTrace(done, 'simple', { id: 'main' });
   });
 
+  it('fileExists false', function(done) {
+    var name = 'simple';
+
+    var config = {
+      baseUrl: path.join(baseDir, name)
+    };
+
+    var options = {
+      rootDir: path.join(baseDir, name),
+      id: 'main',
+      fileExists: function() {
+        return false;
+      },
+      fileRead: function(defaultRead, id, filePath) {
+        return '';
+      }
+    };
+
+    trace(options, config).catch(function(err) {
+      assert.ok(/not found/.test(err.message));
+      done();
+    });
+  });
+
   it('trace-cache-1', function(done) {
 
     var traceCachePath = path.join(baseDir, 'trace-cache-1', 'already-traced.json');

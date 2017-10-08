@@ -517,10 +517,58 @@ var config = require('amodro-config')
 
 Arguments to `modify`:
 
-* **contents**: String. File conents that may contain a config call.
+* **contents**: String. File contents that may contain a config call.
 * **onConfig**: Function. Function called when the first config call is found. It will be passed an Object which is the current config, and the onConfig function should return an Object to use as the new config that will be serialized into the contents, replacing the old config.
 
 Returns a String the contents with the config changes applied.
+
+### amodro-trace/parse
+
+This module helps to extract dependencies from a JS file, which is an AMD module - which is wrapped in a `require` or a `define` statemenet. The API methods on this module:
+
+#### parse.parse
+
+Parses the input JavaScript text and returns an AST of it. Expects a JavaScript content. The returned object can be used later in other calls, or to other module analysis.
+
+```javascript
+var astRoot = require('amodro-trace/parse').parse(contents, options);
+```
+
+Aruguments to `parse`:
+
+* **contents**: String. File contents of an AMD module.
+* **options**: Object. Optional. Options for the `esprima` parser: Only `range` and `loc` properties are recognized.
+
+Returns an Object with the JavaScript AST build from the module contents.
+
+#### parse.traverse
+
+Walks the AST from the specified (root) node up to its leaves and calls the specified callback function with two arguments - the visited node and its parent node.
+
+```javascript
+require('amodro-trace/parse').traverse(rootNode, function (node, parent) {
+  ...
+});
+```
+
+Aruguments to `traverse`:
+
+* **node**: Object. AST root node to start traversing with. Produced by the `parse` method.
+* **visitor**: Function. Callback receiving nodes with its parents.
+
+#### parse.findDependencies
+
+Finds all dependencies specified in the AMD module dependency array, or inside simplified CommonJS wrappers inside the module factory function. Expects a JavaScript AMD module wrapped in a `requirejs/require/define` call. The returned list of dependent modules and their formal parameters match in the correct code.
+
+```javascript
+var dependencies = require('amodro-trace/parse').findDependencies(contents);
+```
+
+Aruguments to `findDependencies`:
+
+* **contents**: String or Object. File contents of an AMD module, or an AST root produced by the `parse` method.
+
+Returns an object with two properties. The property "modules" is an array of dependent module paths as strings. The dependencies have not been normalized; they may be relative IDs. The property "params" is an array of formal parameter names as strings.
 
 ## Read transforms
 

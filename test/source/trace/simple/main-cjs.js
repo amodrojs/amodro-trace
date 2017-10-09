@@ -1,5 +1,5 @@
 'use strict';
-define(function(require) {
+require(function(require) {
   var a = require('a');
   console.log(a);
 });

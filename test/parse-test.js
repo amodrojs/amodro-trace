@@ -51,7 +51,7 @@ describe('parse', function() {
   });
   
   describe('findDependenccies', function() {
-    it('with an AMD module', function() {
+    it('with an AMD main application', function() {
       var content = fs.readFileSync(path.join(__dirname,
               'source/trace/simple/main.js'), 'utf8');
       var dependencies = amodroParse.findDependencies(content);
@@ -61,7 +61,7 @@ describe('parse', function() {
       assert.equal(dependencies.params[0], 'a');
     });
 
-    it('with a CJS module', function() {
+    it('with a CJS main application', function() {
       var content = fs.readFileSync(path.join(__dirname,
               'source/trace/simple/main-cjs.js'), 'utf8');
       var dependencies = amodroParse.findDependencies(content);
@@ -71,6 +71,28 @@ describe('parse', function() {
       assert.equal(dependencies.params.length, 2);
       assert.equal(dependencies.params[0], 'require');
       assert.equal(dependencies.params[1], 'a');
+    });
+
+    it('with an AMD module', function() {
+      var content = fs.readFileSync(path.join(__dirname,
+              'source/trace/simple/c.js'), 'utf8');
+      var dependencies = amodroParse.findDependencies(content);
+      assert.equal(dependencies.modules.length, 1);
+      assert.equal(dependencies.modules[0], 'b');
+      assert.equal(dependencies.params.length, 1);
+      assert.equal(dependencies.params[0], 'b');
+    });
+
+    it('with a CJS module', function() {
+      var content = fs.readFileSync(path.join(__dirname,
+              'source/trace/simple/c-cjs.js'), 'utf8');
+      var dependencies = amodroParse.findDependencies(content);
+      assert.equal(dependencies.modules.length, 2);
+      assert.equal(dependencies.modules[0], 'require');
+      assert.equal(dependencies.modules[1], 'b');
+      assert.equal(dependencies.params.length, 2);
+      assert.equal(dependencies.params[0], 'require');
+      assert.equal(dependencies.params[1], 'b');
     });
 
     it('with an already parsed content', function() {

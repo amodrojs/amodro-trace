@@ -106,4 +106,27 @@ describe('parse', function() {
       assert.equal(dependencies.params[0], 'a');
     });
   });
+
+  describe('findCjsDependenccies', function() {
+    it('with an CJS module', function() {
+      var content = fs.readFileSync(path.join(__dirname,
+              'source/trace/cjs/controller.js'), 'utf8');
+      var dependencies = amodroParse.findCjsDependencies(content);
+      assert.equal(dependencies.modules.length, 1);
+      assert.equal(dependencies.modules[0], './model');
+      assert.equal(dependencies.params.length, 1);
+      assert.equal(dependencies.params[0], 'model');
+    });
+
+    it('with an already parsed content', function() {
+      var content = fs.readFileSync(path.join(__dirname,
+              'source/trace/cjs/controller.js'), 'utf8');
+      var astRoot = esprima.parse(content);
+      var dependencies = amodroParse.findCjsDependencies(astRoot);
+      assert.equal(dependencies.modules.length, 1);
+      assert.equal(dependencies.modules[0], './model');
+      assert.equal(dependencies.params.length, 1);
+      assert.equal(dependencies.params[0], 'model');
+    });
+  });
 });

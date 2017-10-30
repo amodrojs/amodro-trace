@@ -570,6 +570,20 @@ Aruguments to `findDependencies`:
 
 Returns an object with two properties. The property "modules" is an array of dependent module paths as strings. The dependencies have not been normalized; they may be relative IDs. The property "params" is an array of formal parameter names as strings.
 
+#### parse.findCjsDependencies
+
+Finds only CommonJS dependencies, ones that are the form  `require('stringLiteral')`. Expects a JavaScript module. The returned list of dependent modules and their formal parameters match in the correct code.
+
+```javascript
+var dependencies = require('amodro-trace/parse').findCjsDependencies(contents);
+```
+
+Aruguments to `findCjsDependencies`:
+
+* **contents**: String or Object. File contents of a CommonJS module, or an AST root produced by the `parse` method.
+
+Returns an object with two properties. The property "modules" is an array of dependent module paths as strings. The dependencies have not been normalized; they may be relative IDs. The property "params" is an array of formal parameter names as strings.
+
 ## Read transforms
 
 See the [readTransform](#readtransform) option for background on read transforms. This section describes read transforms provided by this project.

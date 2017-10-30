@@ -57,6 +57,29 @@ var parse = {
       modules: dependencies,
       params: params
     }
+  },
+
+  /**
+   * Finds only CommonJS dependencies, ones that are the form 
+   * require('stringLiteral'). Expects a JavaScript module. The returned
+   * list of dependent modules and their formal parameters match in the
+   * correct code.
+   *
+   * @param  {String} contents String or Object. File contents of a CommonJS
+   * module, or an AST root produced by the `parse` method.
+   * @return {Object} Returns an object with two properties. The property
+   * "modules" is an array of dependent module paths as strings. The
+   * dependencies have not been normalized; they may be relative IDs.
+   * The property "params" is an array of formal parameter names as strings.
+   */
+  findCjsDependencies: function(contents) {
+    var dependencies = privateParse.findCjsDependencies('', contents, {}),
+        params = dependencies.params;
+    delete dependencies.params;
+    return  {
+      modules: dependencies,
+      params: params
+    }
   }
 };
 

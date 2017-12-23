@@ -372,7 +372,7 @@ Example result where "view1" was a built file containining a few other modules:
 
 Eache module entry may also include a `dependents` property, which is the set of module IDs that statically specify the module as a dependency. It is only the direct dependents, not the dependents of those dependents.
 
-`loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-config](#amodro-traceconfig) can help with that.
+`loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-trace/config](#amodro-traceconfig) can help with that.
 
 If parsing triggered warnings or errors, they will show in the `warnings` or `errors` arrays respectively, as an array of strings. These are treated as non-fatal, in that the file with the issue is skipped (may just be invalid JS not meant to be fully traced), but for best results it is best to investigate the messages that show up here. If there are no warnings or errors, those properties will not show up in the trace result.
 
@@ -493,7 +493,7 @@ This module helps extract or modify a require.config()/requirejs.config() config
 Finds the first requirejs/require call to require[js].config/require({}) in a file and returns the value as an object. Will not work with configs that use variable references outside of the config definition. In general, config calls that look more like JSON will work best.
 
 ```javascript
-var config = require('amodro-config').find(contents);
+var config = require('amodro-trace/config').find(contents);
 ```
 
 Aruguments to `find`:
@@ -507,7 +507,7 @@ Returns an Object with the config. Could be `undefined` if a config is not found
 Modify the contents of a require.config/requirejs.config call and places the modifications bac in the contents. This call will LOSE any existing comments that are in the config string.
 
 ```javascript
-var config = require('amodro-config')
+var config = require('amodro-trace/config')
 .modify(contents, function onConfig(currentConfig) {
   // This example just modifies the baseUrl.
   currentConfig.baseUrl = 'new/base';

@@ -181,7 +181,7 @@ amodroTrace(
     // The module ID to trace.
     id: 'app',
 
-    // You can ovrride the file existence checks by passing in a function for
+    // You can override the file existence checks by passing in a function for
     // fileExists. defaultExistst is the default exists function used by this
     // project's internals. A synchronous boolean result is expected to be
     // returned from this function. It should only return true for files, and
@@ -322,7 +322,7 @@ The `traced` results are order by least dependent to more dependent. So, modules
 
 Each module entry also includes the normalized IDs for the dependencies in the `deps` property. If no dependencies, the `deps` property is not there. For files that have multiple named `define()`'d modules, their IDs with their dependencies will be listed with the `otherIds` property. Only top level define()s in the file are found, nested ones inside a UMD wrapper should not be traced.
 
-Example result where "view1" was a built file containining a few other modules:
+Example result where "view1" was a built file containing a few other modules:
 
 ```json
 {
@@ -370,7 +370,7 @@ Example result where "view1" was a built file containining a few other modules:
 }
 ```
 
-Eache module entry may also include a `dependents` property, which is the set of module IDs that statically specify the module as a dependency. It is only the direct dependents, not the dependents of those dependents.
+Each module entry may also include a `dependents` property, which is the set of module IDs that statically specify the module as a dependency. It is only the direct dependents, not the dependents of those dependents.
 
 `loaderConfig` is the AMD loader config that would be used by an AMD loader to load those modules at runtime. If you want to extract the loader config from an existing JS file, [amodro-config](#amodro-traceconfig) can help with that.
 
@@ -496,7 +496,7 @@ Finds the first requirejs/require call to require[js].config/require({}) in a fi
 var config = require('amodro-config').find(contents);
 ```
 
-Aruguments to `find`:
+Arguments to `find`:
 
 * **contents**: String. File contents that might contain a config call.
 
@@ -517,7 +517,7 @@ var config = require('amodro-config')
 
 Arguments to `modify`:
 
-* **contents**: String. File conents that may contain a config call.
+* **contents**: String. File contents that may contain a config call.
 * **onConfig**: Function. Function called when the first config call is found. It will be passed an Object which is the current config, and the onConfig function should return an Object to use as the new config that will be serialized into the contents, replacing the old config.
 
 Returns a String the contents with the config changes applied.

@@ -8,30 +8,6 @@ var amodroParse = require('../parse'),
     path = require('path');
 
 describe('parse', function() {
-  describe('parse', function() {
-    var content;
-    
-    before(function() {
-      content = fs.readFileSync(path.join(__dirname,
-          'source/trace/simple/main.js'), 'utf8');
-    });
-  
-    it('without parser options', function() {
-      var astRoot = amodroParse.parse(content);
-      assert.ok(astRoot);
-    });
-
-    it('with parser options', function() {
-      var astRoot = amodroParse.parse(content, {
-        range: true,
-        loc: true
-      });
-      assert.ok(astRoot);
-      assert.ok(astRoot.range);
-      assert.ok(astRoot.loc);
-    });
-  });
-  
   describe('traverse', function() {
     it('visits a known node', function() {
       var content = fs.readFileSync(path.join(__dirname,
@@ -49,7 +25,7 @@ describe('parse', function() {
       assert.ok(callNode);
     });
   });
-  
+
   describe('findDependenccies', function() {
     it('with an AMD main application', function() {
       var content = fs.readFileSync(path.join(__dirname,

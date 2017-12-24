@@ -5,23 +5,20 @@ var privateParse = require('./lib/parse');
  * Functions for parsing and analysing dependencies of AMD modules. Mostly a
  * wrapper around lib/ modules, but want to try not exposing the libs directly,
  * and provide a cleaner interface.
+ *
+ * If you want to obtain JavaScript AST, which is used by the methods
+ * below, use a parser producing output according to the ESTree Spec
+ * (https://github.com/estree/estree). For example, Esprima
+ * (https://github.com/jquery/esprima):
+ *
+ * var esprima = require('esprima');
+ *
+ * var astRoot = esprima.parse(fileContents, {
+ *   range: includeIndexBasedRangeLocation,
+ *   loc: includeLineAndColumnBasedLocation
+ * });
  */
 var parse = {
-  /**
-   * Parses the input JavaScript text and returns a AST of it. Expects a
-   * JavaScript content. The returned object can be used later in other calls,
-   * or to other module analysis.
-   *
-   * @param {String} contents File contents of an AMD module.
-   * @param {Object} options Optional. Options for the `esprima` parser: Only
-   * `range` and `loc` properties are recognized.
-   * @return {Object} Optional. Options for the `esprima` parser: Only `range`
-   * and `loc` properties are recognized.
-   */
-  parse: function (contents, options) {
-    return privateParse.parseFileContents('', contents, options);
-  },
-
   /**
    * Walks the AST from the specified (root) node up to its leaves and calls
    * the specified callback function with two arguments - the visited node

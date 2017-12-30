@@ -556,7 +556,7 @@ Returns an Object with the JavaScript AST build from the module contents.
 
 #### parse.traverse
 
-Walks the AST from the specified (root) node up to its leaves and calls the specified callback function with two arguments - the visited node and its parent node.
+Walks the AST from the specified (root) node up to its leaves and calls the specified callback function with two arguments - the visited node and its parent node. Once the callback returns `false`, traversing stops.
 
 ```javascript
 require('amodro-trace/parse').traverse(rootNode, function (node, parent) {
@@ -564,7 +564,22 @@ require('amodro-trace/parse').traverse(rootNode, function (node, parent) {
 });
 ```
 
-Arguments to `traverse`:
+Arguments to `traverseBroad`:
+
+* **node**: Object. AST root node to start traversing with. Produced by the `parse` method.
+* **visitor**: Function. Callback receiving nodes with its parents.
+
+#### parse.traverseBroad
+
+Walks the AST from the specified (root) node up to its leaves and calls the specified callback function with two arguments - the visited node and its parent node. Once the callback returns `false`, its children will be skipped and the traversing will continue with its next sibling.
+
+```javascript
+require('amodro-trace/parse').traverseBroad(rootNode, function (node, parent) {
+  ...
+});
+```
+
+Arguments to `traverseBroad`:
 
 * **node**: Object. AST root node to start traversing with. Produced by the `parse` method.
 * **visitor**: Function. Callback receiving nodes with its parents.

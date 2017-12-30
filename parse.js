@@ -22,7 +22,7 @@ var parse = {
   /**
    * Walks the AST from the specified (root) node up to its leaves and calls
    * the specified callback function with two arguments - the visited node
-   * and its parent node.
+   * and its parent node. Once the callback returns `false`, traversing stops.
    *
    * @param {Object} node AST root node to start traversing with. Produced
    * by the `parse` method.
@@ -30,6 +30,20 @@ var parse = {
    */
   traverse: function (node, visitor) {
     return privateParse.traverse(node, visitor);
+  },
+
+  /**
+   * Walks the AST from the specified (root) node up to its leaves and calls
+   * the specified callback function with two arguments - the visited node
+   * and its parent node. Once the callback returns `false`, its children
+   * will be skipped and the traversing will continue with its next sibling.
+   *
+   * @param {Object} node AST root node to start traversing with. Produced
+   * by the `parse` method.
+   * @param {Function} visitor Callback receiving nodes with its parents.
+   */
+  traverseBroad: function (node, visitor) {
+    return privateParse.traverseBroad(node, visitor);
   },
 
   /**
@@ -53,7 +67,7 @@ var parse = {
     return  {
       modules: dependencies,
       params: params
-    }
+    };
   },
 
   /**
@@ -76,7 +90,7 @@ var parse = {
     return  {
       modules: dependencies,
       params: params
-    }
+    };
   }
 };
 

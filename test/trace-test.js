@@ -210,7 +210,8 @@ describe('trace', function() {
 
   it('trace-cache-1', function(done) {
 
-    var traceCachePath = path.join(baseDir, 'trace-cache-1', 'already-traced.json');
+    var traceCachePath = path.join(baseDir, 'trace-cache-1',
+          'already-traced.json');
     var traceCache = JSON.parse(readFile(traceCachePath));
 
     runTrace(done, 'trace-cache-1', {
@@ -227,7 +228,8 @@ describe('trace', function() {
 
   it('trace-cache-plugin', function(done) {
 
-    var traceCachePath = path.join(baseDir, 'trace-cache-plugin', 'already-traced.json');
+    var traceCachePath = path.join(baseDir, 'trace-cache-plugin',
+          'already-traced.json');
     var traceCache = JSON.parse(readFile(traceCachePath));
 
     runTrace(done, 'trace-cache-plugin', {

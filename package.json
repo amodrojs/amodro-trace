@@ -4,7 +4,9 @@
   "description": "AMD module tracing for build processes.",
   "main": "trace.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha test"
+    "lint": "jshint *.js lib/*.js read/*.js write/*.js test/*.js",
+    "check": "mocha test",
+    "test": "npm run lint && npm run check"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "esprima": "^4.0.0"
   },
   "devDependencies": {
+    "jshint": "^2.9.5",
     "mocha": "^2.2.1"
   }
 }

@@ -155,6 +155,38 @@ describe('parse', function() {
       assert.equal(dependencies.params.length, 1);
       assert.equal(dependencies.params[0], 'a');
     });
+
+    it('with a module exporting an object literal', function() {
+      var content = fs.readFileSync(path.join(__dirname,
+              'source/trace/simple/module-object-only.js'), 'utf8');
+      var dependencies = amodroParse.findDependencies(content);
+      assert.equal(dependencies.modules.length, 0);
+      assert.equal(dependencies.params.length, 0);
+    });
+
+    it('with a module with "explicitly" empty dependencies', function() {
+      var content = fs.readFileSync(path.join(__dirname,
+              'source/trace/simple/module-empty-deps.js'), 'utf8');
+      var dependencies = amodroParse.findDependencies(content);
+      assert.equal(dependencies.modules.length, 0);
+      assert.equal(dependencies.params.length, 0);
+    });
+
+    it('with an application passing an object literal', function() {
+      var content = fs.readFileSync(path.join(__dirname,
+              'source/trace/simple/app-object-only.js'), 'utf8');
+      var dependencies = amodroParse.findDependencies(content);
+      assert.equal(dependencies.modules.length, 0);
+      assert.equal(dependencies.params.length, 0);
+    });
+
+    it('withn an application with "explicitly" empty dependencies', function() {
+      var content = fs.readFileSync(path.join(__dirname,
+              'source/trace/simple/app-empty-deps.js'), 'utf8');
+      var dependencies = amodroParse.findDependencies(content);
+      assert.equal(dependencies.modules.length, 0);
+      assert.equal(dependencies.params.length, 0);
+    });
   });
 
   describe('findCjsDependenccies', function() {

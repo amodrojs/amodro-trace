@@ -12,11 +12,7 @@ var privateParse = require('./lib/parse');
  * (https://github.com/jquery/esprima):
  *
  * var esprima = require('esprima');
- *
- * var astRoot = esprima.parse(fileContents, {
- *   range: includeIndexBasedRangeLocation,
- *   loc: includeLineAndColumnBasedLocation
- * });
+ * var astRoot = esprima.parse(fileContents);
  */
 var parse = {
   /**

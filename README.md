@@ -530,11 +530,7 @@ Methods accept either a string with the source content or an object  with JavaSc
 
 ```javascript
 var esprima = require('esprima');
-
-var astRoot = esprima.parse(fileContents, {
-  range: includeIndexBasedRangeLocation,
-  loc: includeLineAndColumnBasedLocation
-});
+var astRoot = esprima.parse(fileContents);
 ```
 
 The API methods on this module:

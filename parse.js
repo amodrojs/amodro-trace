@@ -57,7 +57,7 @@ var parse = {
    * The property "params" is an array of formal parameter names as strings.
    */
   findDependencies: function(contents) {
-    var dependencies = privateParse.findDependencies('', contents, {}),
+    var dependencies = privateParse.findDependencies('', contents),
         params = dependencies.params;
     delete dependencies.params;
     return  {
@@ -80,7 +80,7 @@ var parse = {
    * The property "params" is an array of formal parameter names as strings.
    */
   findCjsDependencies: function(contents) {
-    var dependencies = privateParse.findCjsDependencies('', contents, {}),
+    var dependencies = privateParse.findCjsDependencies('', contents),
         params = dependencies.params;
     delete dependencies.params;
     return  {

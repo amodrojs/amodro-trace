@@ -1,6 +1,6 @@
 {
   "name": "amodro-trace",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "AMD module tracing for build processes.",
   "main": "trace.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "url": "https://github.com/amodrojs/amodro-trace/issues"
   },
   "dependencies": {
-    "esprima": "^4.0.0"
+    "esprima": "^4.0.1"
   },
   "devDependencies": {
     "mocha": "^4.0.1"

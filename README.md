@@ -522,6 +522,92 @@ Arguments to `modify`:
 
 Returns a String the contents with the config changes applied.
 
+### amodro-trace/parse
+
+This module helps to extract dependencies from a JS file, which is an AMD module - which is wrapped in a `require` or a `define` statement.
+
+Methods accept either a string with the source content or an object  with JavaScript AST. If you traverse the AST multiple times, you can improve performance by parsing the source just once by a parser producing output according to the [ESTree Spec](https://github.com/estree/estree). For example, [Esprima](https://github.com/jquery/esprima):
+
+```javascript
+var esprima = require('esprima');
+var astRoot = esprima.parse(fileContents);
+```
+
+The API methods on this module:
+
+#### parse.parse
+
+Parses the input JavaScript text and returns an AST of it. Expects a JavaScript content. The returned object can be used later in other calls, or to other module analysis.
+
+```javascript
+var astRoot = require('amodro-trace/parse').parse(contents, options);
+```
+
+Arguments to `parse`:
+
+* **contents**: String. File contents of an AMD module.
+* **options**: Object. Optional. Options for the `esprima` parser: Only `range` and `loc` properties are recognized.
+
+Returns an Object with the JavaScript AST build from the module contents.
+
+#### parse.traverse
+
+Walks the AST from the specified (root) node up to its leaves and calls the specified callback function with two arguments - the visited node and its parent node. Once the callback returns `false`, traversing stops.
+
+```javascript
+require('amodro-trace/parse').traverse(rootNode, function (node, parent) {
+  ...
+});
+```
+
+Arguments to `traverseBroad`:
+
+* **node**: Object. AST root node to start traversing with. Produced by the `parse` method.
+* **visitor**: Function. Callback receiving nodes with its parents.
+
+#### parse.traverseBroad
+
+Walks the AST from the specified (root) node up to its leaves and calls the specified callback function with two arguments - the visited node and its parent node. Once the callback returns `false`, its children will be skipped and the traversing will continue with its next sibling.
+
+```javascript
+require('amodro-trace/parse').traverseBroad(rootNode, function (node, parent) {
+  ...
+});
+```
+
+Arguments to `traverseBroad`:
+
+* **node**: Object. AST root node to start traversing with. Produced by the `parse` method.
+* **visitor**: Function. Callback receiving nodes with its parents.
+
+#### parse.findDependencies
+
+Finds all dependencies specified in the AMD module dependency array, or inside simplified CommonJS wrappers inside the module factory function. Expects a JavaScript AMD module wrapped in a `requirejs/require/define` call. The returned list of dependent modules and their formal parameters match in the correct code.
+
+```javascript
+var dependencies = require('amodro-trace/parse').findDependencies(contents);
+```
+
+Arguments to `findDependencies`:
+
+* **contents**: String or Object. File contents of an AMD module, or an AST root produced by the `parse` method.
+
+Returns an object with two properties. The property "modules" is an array of dependent module paths as strings. The dependencies have not been normalized; they may be relative IDs. The property "params" is an array of formal parameter names as strings.
+
+#### parse.findCjsDependencies
+
+Finds only CommonJS dependencies, ones that are the form  `require('stringLiteral')`. Expects a JavaScript module. The returned list of dependent modules and their formal parameters match in the correct code.
+
+```javascript
+var dependencies = require('amodro-trace/parse').findCjsDependencies(contents);
+```
+
+Arguments to `findCjsDependencies`:
+
+* **contents**: String or Object. File contents of a CommonJS module, or an AST root produced by the `parse` method.
+
+Returns an object with two properties. The property "modules" is an array of dependent module paths as strings. The dependencies have not been normalized; they may be relative IDs. The property "params" is an array of formal parameter names as strings.
+
 ## Read transforms
 
 See the [readTransform](#readtransform) option for background on read transforms. This section describes read transforms provided by this project.
